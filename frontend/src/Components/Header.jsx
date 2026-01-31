@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 export function Header() {
   const [openDiscoverMenu, setOpenDiscoverMenu] = useState(false);
   const menuRef = useRef(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     if (!openDiscoverMenu) return;
@@ -15,6 +16,20 @@ export function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openDiscoverMenu]);
+
+  //scroll listener
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const categories = [
     { name: "Sinema" },
@@ -32,7 +47,11 @@ export function Header() {
   ];
 
   return (
-    <div className="flex h-16 w-full bg-[rgb(38,38,38)] absolute top-0 left-0 items-center">
+    <div
+      className={`flex h-16 w-full bg-[rgb(38,38,38)] fixed z-50 top-0 left-0 transition-all duration-300 items-center ${
+        isScrolled ? "bg-black text-white" : "bg-[rgb(38,38,38)]"
+      }`}
+    >
       <img className="h-10 mt-3 ml-5 w-50" src="header-logo.png"></img>
       <div ref={menuRef} className="relative">
         <button

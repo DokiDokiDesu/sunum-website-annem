@@ -5,35 +5,49 @@ export function Incoming() {
 
   const educators = [
     {
-      name: "Rüzgar Mira Okan",
+      instructor: "Rüzgar Mira Okan",
       topic: "Zarafet, Nezaket ve Görgü",
+      description:
+        "Modern dünyada zarafet ve görgü kurallarının önemi, sosyal ilişkilerde nasıl uygulanacağı üzerine kapsamlı bir seminer.",
+      date: "14/05/2026",
+      daysLeft: "Çarşamba",
       image: "ornek-kart.jpg",
-      isNew: true,
     },
     {
-      name: "Elçin Biren",
-      topic:
-        "Yapay Zeka Çağında Ebeveynlik: Dijital Okuryazarlık ve Siber Güvenlik",
+      instructor: "Elçin Biren",
+      topic: "Yapay Zeka Çağında Ebeveynlik",
+      description:
+        "Dijital çağda çocuk yetiştirme, teknoloji kullanımı ve siber güvenlik konularında ailelere rehberlik.",
+      date: "15/05/2026",
+      daysLeft: "Perşembe",
       image: "ornek-kart.jpg",
-      isNew: true,
     },
     {
-      name: "Prof. Dr. Tuna Şare Ağtürk",
+      instructor: "Prof. Dr. Tuna Şare Ağtürk",
       topic: "Antik Dünyanın Yedi Harikası",
+      description:
+        "Antik çağın muhteşem yapıları ve bu eserlerin tarihsel önemi üzerine detaylı bir inceleme.",
+      date: "18/05/2026",
+      daysLeft: "Pazar",
       image: "ornek-kart.jpg",
-      isNew: true,
     },
     {
-      name: "Levon Bağış",
-      topic: "Fermantasyondan Damıtmaya: Distile İçkilerin Tarihi ve Kültürü",
+      instructor: "Levon Bağış",
+      topic: "Fermantasyondan Damıtmaya",
+      description:
+        "Distile içkilerin tarihi, üretim süreçleri ve kültürel önemi hakkında uzman görüşleri.",
+      date: "20/05/2026",
+      daysLeft: "Salı",
       image: "ornek-kart.jpg",
-      isNew: true,
     },
     {
-      name: "Prof. Dr. Tonguç Rado",
+      instructor: "Prof. Dr. Tonguç Rado",
       topic: "Kuantum Fiziğine Giriş",
+      description:
+        "Kuantum mekaniğinin temel prensipleri ve günlük hayattaki uygulamaları hakkında giriş seviyesi anlatım.",
+      date: "22/05/2026",
+      daysLeft: "Perşembe",
       image: "ornek-kart.jpg",
-      isNew: true,
     },
   ];
 
@@ -81,18 +95,14 @@ export function Incoming() {
                 }}
               ></div>
 
-              {/* New Badge */}
-              {educator.isNew && (
-                <>
-                  <span className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    14/05/2026
-                  </span>
+              {/* Badges */}
+              <span className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                {educator.date}
+              </span>
 
-                  <span className="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    Yarın
-                  </span>
-                </>
-              )}
+              <span className="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                {educator.daysLeft}
+              </span>
 
               {/* Content */}
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -100,9 +110,11 @@ export function Incoming() {
                   className="text-2xl font-bold mb-2"
                   style={{ fontStyle: "italic" }}
                 >
-                  {educator.name}
+                  {educator.topic}
                 </h3>
-                <p className="text-sm opacity-90">{educator.topic}</p>
+                <p className="text-sm opacity-90 line-clamp-2">
+                  {educator.description}
+                </p>
               </div>
             </div>
           ))}
