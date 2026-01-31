@@ -1,3 +1,11 @@
+import { Header } from "../../Components/Header";
+import { Incoming } from "./Incoming";
+
 export function Homepage() {
-  return <p className="text-white">test</p>;
+  return (
+    <>
+      <Header />
+      <Incoming />
+    </>
+  );
 }
