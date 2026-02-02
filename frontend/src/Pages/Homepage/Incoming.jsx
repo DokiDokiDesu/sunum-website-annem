@@ -1,7 +1,9 @@
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function Incoming() {
   const scrollContainerRef = useRef(null);
+  const navigate = useNavigate();
 
   const educators = [
     {
@@ -81,6 +83,7 @@ export function Incoming() {
           ref={scrollContainerRef}
           className="flex gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          onClick={() => navigate("/seminar-page")}
         >
           {educators.map((educator, index) => (
             <div

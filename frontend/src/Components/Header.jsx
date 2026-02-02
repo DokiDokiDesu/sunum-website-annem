@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
   const [openDiscoverMenu, setOpenDiscoverMenu] = useState(false);
   const menuRef = useRef(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!openDiscoverMenu) return;
@@ -52,7 +54,11 @@ export function Header() {
         isScrolled ? "bg-black text-white" : "bg-[rgb(38,38,38)]"
       }`}
     >
-      <img className="h-10 mt-3 ml-5 w-50" src="header-logo.png"></img>
+      <img
+        onClick={() => navigate("/")}
+        className="h-10 mt-3 ml-5 w-50 cursor-pointer"
+        src="header-logo.png"
+      ></img>
       <div ref={menuRef} className="relative">
         <button
           className="h-10 w-26 ml-5 border border-white rounded"
