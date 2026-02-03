@@ -1,11 +1,26 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export function Header() {
   const [openDiscoverMenu, setOpenDiscoverMenu] = useState(false);
   const menuRef = useRef(null);
+  const searchRef = useRef(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showSearchInput, setShowSearchInput] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Sayfaya göre arka plan rengini belirle
+  const getBackgroundColor = () => {
+    switch (location.pathname) {
+      case "/":
+        return isScrolled ? "bg-black" : "bg-[rgb(38,38,38)]";
+      case "/seminar-page":
+        return isScrolled ? "bg-black" : "bg-transparent";
+      default:
+        return "bg-white";
+    }
+  };
 
   useEffect(() => {
     if (!openDiscoverMenu) return;
@@ -18,6 +33,18 @@ export function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openDiscoverMenu]);
+
+  useEffect(() => {
+    if (!showSearchInput) return;
+
+    const handleClickOutside = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSearchInput(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showSearchInput]);
 
   //scroll listener
 
@@ -50,9 +77,7 @@ export function Header() {
 
   return (
     <div
-      className={`flex h-16 w-full bg-[rgb(38,38,38)] fixed z-50 top-0 left-0 transition-all duration-300 items-center ${
-        isScrolled ? "bg-black text-white" : "bg-[rgb(38,38,38)]"
-      }`}
+      className={`flex h-16 w-full fixed z-50 top-0 left-0 transition-all duration-300 items-center ${getBackgroundColor()}`}
     >
       <img
         onClick={() => navigate("/")}
@@ -99,13 +124,39 @@ export function Header() {
           </div>
         )}
       </div>
+      {/*Header linkleri */}
+      <div className="flex ml-20 text-[rgb(243,243,243)]">
+        <p className=" hover:text-gray-400 transition-all duration-500">
+          Ana Sayfa
+        </p>
+        <p className="ml-15 hover:text-gray-400 transition-all duration-500">
+          Tüm Seminerler
+        </p>
+        <p className="ml-15 hover:text-gray-400 transition-all duration-500">
+          Hakkımızda
+        </p>
+        <p className="ml-15 hover:text-gray-400 transition-all duration-500">
+          İletişim
+        </p>
+      </div>
+      {/* header linkleri- sağ*/}
+      <div className="flex ml-auto items-center gap-3 mr-10 ">
+        <input
+          ref={searchRef}
+          placeholder="ara"
+          className={`search-input border rounded ${showSearchInput ? "show" : ""}`}
+        ></input>
 
-      <input
-        className="border border-gray-300 border-solid px-3 py-2 bg-transparent text-white placeholder-gray-400 rounded min-w-70 ml-5"
-        placeholder="bu gün ne öğrenmek istiyorsun?"
-      ></input>
-      <button className="ml-5">Hakkımızda</button>
-      <button className="ml-5">İletişim</button>
+        <img
+          onClick={() => setShowSearchInput(!showSearchInput)}
+          src="icons8-search-30.png"
+          className="cursor-pointer"
+        ></img>
+        <img
+          src="icons8-notification-48.png"
+          className="cursor-pointer h-8"
+        ></img>
+      </div>
     </div>
   );
 }
