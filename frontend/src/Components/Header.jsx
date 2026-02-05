@@ -18,7 +18,7 @@ export function Header() {
       case "/seminar-page":
         return isScrolled ? "bg-black" : "bg-transparent";
       default:
-        return "bg-white";
+        return isScrolled ? "bg-black" : "bg-[rgb(38,38,38)]";
     }
   };
 
@@ -118,7 +118,10 @@ export function Header() {
               ))}
             </div>
 
-            <button className="mt-4 w-full rounded-md bg-red-500 py-2 text-white hover:bg-red-600">
+            <button
+              onClick={() => navigate("/all-seminar")}
+              className="mt-4 w-full rounded-md bg-red-500 py-2 text-white hover:bg-red-600"
+            >
               Tüm Seminerler
             </button>
           </div>
@@ -129,13 +132,19 @@ export function Header() {
         <p className=" hover:text-gray-400 transition-all duration-500">
           Ana Sayfa
         </p>
-        <p className="ml-15 hover:text-gray-400 transition-all duration-500">
+        <p
+          onClick={() => navigate("/all-seminar")}
+          className="ml-15 hover:text-gray-400 transition-all duration-500"
+        >
           Tüm Seminerler
         </p>
         <p className="ml-15 hover:text-gray-400 transition-all duration-500">
           Hakkımızda
         </p>
-        <p className="ml-15 hover:text-gray-400 transition-all duration-500">
+        <p
+          onClick={() => navigate("/contact")}
+          className="ml-15 hover:text-gray-400 transition-all duration-500 cursor-pointer"
+        >
           İletişim
         </p>
       </div>
