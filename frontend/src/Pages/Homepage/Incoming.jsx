@@ -1,57 +1,33 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import "dayjs/locale/tr";
+
+dayjs.locale("tr");
 
 export function Incoming() {
   const scrollContainerRef = useRef(null);
   const navigate = useNavigate();
+  const [educators, setEducators] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const educators = [
-    {
-      instructor: "Rüzgar Mira Okan",
-      topic: "Zarafet, Nezaket ve Görgü",
-      description:
-        "Modern dünyada zarafet ve görgü kurallarının önemi, sosyal ilişkilerde nasıl uygulanacağı üzerine kapsamlı bir seminer.",
-      date: "14/05/2026",
-      daysLeft: "Çarşamba",
-      image: "ornek-kart.jpg",
-    },
-    {
-      instructor: "Elçin Biren",
-      topic: "Yapay Zeka Çağında Ebeveynlik",
-      description:
-        "Dijital çağda çocuk yetiştirme, teknoloji kullanımı ve siber güvenlik konularında ailelere rehberlik.",
-      date: "15/05/2026",
-      daysLeft: "Perşembe",
-      image: "ornek-kart.jpg",
-    },
-    {
-      instructor: "Prof. Dr. Tuna Şare Ağtürk",
-      topic: "Antik Dünyanın Yedi Harikası",
-      description:
-        "Antik çağın muhteşem yapıları ve bu eserlerin tarihsel önemi üzerine detaylı bir inceleme.",
-      date: "18/05/2026",
-      daysLeft: "Pazar",
-      image: "ornek-kart.jpg",
-    },
-    {
-      instructor: "Levon Bağış",
-      topic: "Fermantasyondan Damıtmaya",
-      description:
-        "Distile içkilerin tarihi, üretim süreçleri ve kültürel önemi hakkında uzman görüşleri.",
-      date: "20/05/2026",
-      daysLeft: "Salı",
-      image: "ornek-kart.jpg",
-    },
-    {
-      instructor: "Prof. Dr. Tonguç Rado",
-      topic: "Kuantum Fiziğine Giriş",
-      description:
-        "Kuantum mekaniğinin temel prensipleri ve günlük hayattaki uygulamaları hakkında giriş seviyesi anlatım.",
-      date: "22/05/2026",
-      daysLeft: "Perşembe",
-      image: "ornek-kart.jpg",
-    },
-  ];
+  useEffect(() => {
+    fetchUpcomingSeminars();
+  }, []);
+
+  const fetchUpcomingSeminars = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/seminars?isUpcoming=true",
+      );
+      const data = await response.json();
+      setEducators(data);
+    } catch (error) {
+      console.error("Yaklaşan seminerler yüklenemedi:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
@@ -69,6 +45,20 @@ export function Incoming() {
         Yaklaşan Seminerler
       </h2>
 
+      {loading && (
+        <div className="text-center py-12">
+          <p className="text-gray-400">Yükleniyor...</p>
+        </div>
+      )}
+
+      {!loading && educators.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-400">
+            Henüz yaklaşan seminer bulunmamaktadır.
+          </p>
+        </div>
+      )}
+
       <div className="relative w-full">
         {/* Sol Ok */}
         <button
@@ -83,28 +73,31 @@ export function Incoming() {
           ref={scrollContainerRef}
           className="flex gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          onClick={() => navigate("/seminar-page")}
         >
           {educators.map((educator, index) => (
             <div
               key={index}
               className="relative flex-shrink-0 w-72 h-96 rounded-lg overflow-hidden cursor-pointer group"
+              onClick={() => navigate(`/seminar/${educator.id}`)}
             >
               {/* Background Image */}
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
                 style={{
-                  backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url(${educator.image})`,
+                  backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url(${educator.image ? `http://localhost:5000${educator.image}` : "/ornek-kart.jpg"})`,
                 }}
               ></div>
 
               {/* Badges */}
               <span className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                {educator.date}
+                {educator.date ? dayjs(educator.date).format("DD MMM") : ""}
               </span>
 
               <span className="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                {educator.daysLeft}
+                {educator.dayOfWeek
+                  ? educator.dayOfWeek.charAt(0).toUpperCase() +
+                    educator.dayOfWeek.slice(1)
+                  : ""}
               </span>
 
               {/* Content */}
@@ -113,7 +106,7 @@ export function Incoming() {
                   className="text-2xl font-bold mb-2"
                   style={{ fontStyle: "italic" }}
                 >
-                  {educator.topic}
+                  {educator.title}
                 </h3>
                 <p className="text-sm opacity-90 line-clamp-2">
                   {educator.description}

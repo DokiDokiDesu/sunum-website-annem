@@ -1,39 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function Voting() {
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [hasVoted, setHasVoted] = useState(false);
+  const [topics, setTopics] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const topics = [
-    {
-      id: 1,
-      title: "Blockchain ve Kripto Para",
-      description:
-        "Dijital para sistemleri ve blockchain teknolojisinin geleceği",
-    },
-    {
-      id: 2,
-      title: "Sürdürülebilir Yaşam",
-      description:
-        "Çevre dostu yaşam tarzı ve karbon ayak izi azaltma yöntemleri",
-    },
-    {
-      id: 3,
-      title: "Yapay Zeka Etiği",
-      description: "AI'ın toplum üzerindeki etkileri ve etik sınırları",
-    },
-    {
-      id: 4,
-      title: "Uzay Turizmi",
-      description: "Uzay yolculuğunun geleceği ve ticari uzay sektörü",
-    },
-  ];
+  useEffect(() => {
+    fetchTopics();
+  }, []);
 
-  const handleVote = () => {
+  const fetchTopics = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/seminars");
+      const data = await response.json();
+      setTopics(data);
+    } catch (error) {
+      console.error("Konular yüklenemedi:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVote = async () => {
     if (selectedTopic !== null) {
-      setHasVoted(true);
-      // Burada backend'e veri gönderilebilir
-      console.log("Oy verildi:", topics[selectedTopic].title);
+      try {
+        await fetch(
+          `http://localhost:5000/api/seminars/${topics[selectedTopic].id}/vote`,
+          {
+            method: "POST",
+          },
+        );
+        setHasVoted(true);
+      } catch (error) {
+        console.error("Oy gönderilemedi:", error);
+      }
     }
   };
 
@@ -48,6 +49,12 @@ export function Voting() {
             Gelecek seminerlerde görmek isteğiniz konuyu oylayın.
           </p>
         </div>
+
+        {loading && (
+          <div className="text-center py-12">
+            <p className="text-gray-400">Yükleniyor...</p>
+          </div>
+        )}
 
         {!hasVoted ? (
           <>

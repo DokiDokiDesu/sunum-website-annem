@@ -1,50 +1,29 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function Popular() {
+  const navigate = useNavigate();
   const scrollContainerRef = useRef(null);
+  const [popularSeminars, setPopularSeminars] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const popularSeminars = [
-    {
-      rank: 1,
-      instructor: "Rüzgar Mira Okan",
-      topic: "Zarafet, Nezaket ve Görgü",
-      description:
-        "Modern dünyada zarafet ve görgü kurallarının önemi, sosyal ilişkilerde nasıl uygulanacağı üzerine kapsamlı bir seminer.",
-      image: "ornek-kart.jpg",
-    },
-    {
-      rank: 2,
-      instructor: "Enis Arslan",
-      topic: "Erteleme(me)",
-      description:
-        "Erteleme alışkanlığının psikolojik nedenleri ve bu durumun üstesinden gelme stratejileri.",
-      image: "ornek-kart.jpg",
-    },
-    {
-      rank: 3,
-      instructor: "Prof. Dr. Tuna Şare Ağtürk",
-      topic: "Antik Dünyanın Yedi Harikası",
-      description:
-        "Antik çağın muhteşem yapıları ve bu eserlerin tarihsel önemi üzerine detaylı bir inceleme.",
-      image: "ornek-kart.jpg",
-    },
-    {
-      rank: 4,
-      instructor: "Elçin Biren",
-      topic: "Yapay Zeka Çağında Ebeveynlik",
-      description:
-        "Dijital çağda çocuk yetiştirme, teknoloji kullanımı ve siber güvenlik konularında ailelere rehberlik.",
-      image: "ornek-kart.jpg",
-    },
-    {
-      rank: 5,
-      instructor: "Prof. Dr. Tonguç Rado",
-      topic: "Kuantum Fiziğine Giriş",
-      description:
-        "Kuantum mekaniğinin temel prensipleri ve günlük hayattaki uygulamaları hakkında giriş seviyesi anlatım.",
-      image: "ornek-kart.jpg",
-    },
-  ];
+  useEffect(() => {
+    fetchPopularSeminars();
+  }, []);
+
+  const fetchPopularSeminars = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/seminars?isPopular=true",
+      );
+      const data = await response.json();
+      setPopularSeminars(data);
+    } catch (error) {
+      console.error("Popüler seminerler yüklenemedi:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
@@ -59,6 +38,20 @@ export function Popular() {
   return (
     <div className="py-10 px-8 w-full overflow-hidden">
       <h2 className="text-3xl font-bold text-white mb-6">En Çok Sevilenler</h2>
+
+      {loading && (
+        <div className="text-center py-12">
+          <p className="text-gray-400">Yükleniyor...</p>
+        </div>
+      )}
+
+      {!loading && popularSeminars.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-400">
+            Henüz popüler seminer bulunmamaktadır.
+          </p>
+        </div>
+      )}
 
       <div className="relative w-full">
         {/* Sol Ok */}
@@ -79,6 +72,7 @@ export function Popular() {
             <div
               key={index}
               className="relative flex-shrink-0 w-[420px] h-72 rounded-lg cursor-pointer group"
+              onClick={() => navigate(`/seminar/${seminar.id}`)}
             >
               {/* Rank Number */}
               <div className="absolute top-0 left-0 w-full h-full flex items-center justify-start pointer-events-none z-0">
@@ -90,7 +84,7 @@ export function Popular() {
                     opacity: 0.9,
                   }}
                 >
-                  {seminar.rank}
+                  {index + 1}
                 </span>
               </div>
 
@@ -100,7 +94,7 @@ export function Popular() {
                 <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
                   style={{
-                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url(${seminar.image})`,
+                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url(${seminar.image ? `http://localhost:5000${seminar.image}` : "/ornek-kart.jpg"})`,
                   }}
                 ></div>
 
@@ -110,7 +104,7 @@ export function Popular() {
                     className="text-2xl font-bold mb-2"
                     style={{ fontStyle: "italic" }}
                   >
-                    {seminar.topic}
+                    {seminar.title}
                   </h3>
                   <p className="text-sm opacity-90 line-clamp-2">
                     {seminar.description}

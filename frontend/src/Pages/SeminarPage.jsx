@@ -1,6 +1,72 @@
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Header } from "../Components/Header";
+import dayjs from "dayjs";
+import "dayjs/locale/tr";
+
+dayjs.locale("tr");
 
 export function SeminarPage() {
+  const { id } = useParams();
+  const [seminar, setSeminar] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSeminar();
+  }, [id]);
+
+  const fetchSeminar = async () => {
+    try {
+      console.log("Fetching seminar with ID:", id);
+      const response = await fetch(`http://localhost:5000/api/seminars/${id}`);
+      console.log("Response status:", response.status);
+      const data = await response.json();
+      console.log("Seminar data:", data);
+      setSeminar(data);
+    } catch (err) {
+      console.error("Seminer yüklenemedi:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen bg-black flex items-center justify-center">
+          <div className="text-white text-xl">Yükleniyor...</div>
+        </div>
+      </>
+    );
+  }
+
+  if (!seminar) {
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen bg-black flex items-center justify-center">
+          <div className="text-white text-xl">Seminer bulunamadı</div>
+        </div>
+      </>
+    );
+  }
+
+  // Topics'i parse et
+  const topics = seminar.topics
+    ? seminar.topics.split("\n").filter((topic) => topic.trim() !== "")
+    : [];
+
+  // Tarihi formatla
+  const formattedDate = seminar.date
+    ? dayjs(seminar.date).format("DD MMMM YYYY")
+    : "";
+
+  // Gün adını büyük harfle başlat
+  const formattedDay = seminar.dayOfWeek
+    ? seminar.dayOfWeek.charAt(0).toUpperCase() + seminar.dayOfWeek.slice(1)
+    : "";
+
   return (
     <>
       <Header />
@@ -9,7 +75,11 @@ export function SeminarPage() {
         {/* Arkaplan Resmi */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url(/ornek-kart.jpg)" }}
+          style={{
+            backgroundImage: seminar.image
+              ? `url(http://localhost:5000${seminar.image})`
+              : "url(/ornek-kart.jpg)",
+          }}
         >
           {/* Koyu overlay - soldan sağa gradient */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40"></div>
@@ -24,73 +94,82 @@ export function SeminarPage() {
               {/* Sol taraf - İçerik */}
               <div className="lg:col-span-7 text-white space-y-6">
                 {/* Kategori Badge */}
-                <span className="inline-block bg-red-600 text-white px-4 py-1.5 rounded text-sm font-semibold">
-                  Sanat
+                <span className="inline-block bg-red-600 text-white px-4 py-1.5 rounded text-sm font-semibold capitalize">
+                  {seminar.category}
                 </span>
 
                 {/* Başlık */}
 
                 {/* Alt Başlık */}
                 <h1 className="text-5xl lg:text-6xl font-bold italic leading-tight">
-                  Antik Dünyanın Yedi Harikası
+                  {seminar.title}
                 </h1>
 
                 {/* Bilgi Satırı */}
                 <div className="flex items-center gap-4 text-sm text-gray-300">
-                  <span className="bg-gray-700/50 px-3 py-1 rounded">
-                    Sanat
+                  <span className="bg-gray-700/50 px-3 py-1 rounded capitalize">
+                    {seminar.category}
                   </span>
                   <span>•</span>
 
-                  <div>
-                    <span>tahmini seminer süresi : 2 saat</span>
-                  </div>
-                  <span>•</span>
-                  <div>
-                    <span>17/05/2026</span>
-
-                    <span className="ml-5">başlangıç : 20:00</span>
-                  </div>
+                  {seminar.duration && (
+                    <>
+                      <div>
+                        <span>tahmini seminer süresi : {seminar.duration}</span>
+                      </div>
+                      <span>•</span>
+                    </>
+                  )}
+                  {seminar.date && (
+                    <div>
+                      <span>{formattedDate}</span>
+                      {seminar.startTime && (
+                        <span className="ml-5">
+                          başlangıç : {seminar.startTime}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Açıklama */}
                 <p className="text-gray-200 text-lg leading-relaxed max-w-2xl">
-                  Bu eğitimde, insanlık tarihinin en büyüleyici ve gizemli
-                  durakalarına doğru bir yolculuğa çıkacaksınız. Binlerce yıl
-                  boyunca varlığını sürdürmeye devam eden, antik dünyanın
-                  mühendislik ve sanat şaheserlerinin hikayesini kültürel,
-                  politik ve sanatsal bağlamlarıyla ele alacaksınız!
+                  {seminar.description}
                 </p>
               </div>
 
               {/* Sağ taraf - Fiyat Kutuları */}
               <div className="lg:col-span-5 flex flex-col justify-between h-full py-8">
                 {/* Üst Kutu */}
-                <div className="flex flex-col justify-center items-center absolute top-16 right-5 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 w-50">
-                  <p>Perşembe</p>
-                  <p>20:00</p>
-                </div>
+                {seminar.dayOfWeek && (
+                  <div className="flex flex-col justify-center items-center absolute top-16 right-5 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 w-50">
+                    <p>{formattedDay}</p>
+                    {seminar.startTime && <p>{seminar.startTime}</p>}
+                  </div>
+                )}
 
                 {/* Alt Kutu */}
-                <div className="flex justify-center lg:justify-end absolute bottom-0 right-5">
-                  <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md">
-                    <div className="text-center space-y-6">
-                      {/* Fiyat */}
-                      <div>
-                        <p className="text-white text-4xl font-bold mb-2">
-                          100 ₺
-                        </p>
-                      </div>
+                {seminar.price && (
+                  <div className="flex justify-center lg:justify-end absolute bottom-0 right-5">
+                    <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md">
+                      <div className="text-center space-y-6">
+                        {/* Fiyat */}
+                        <div>
+                          <p className="text-white text-4xl font-bold mb-2">
+                            {seminar.price} ₺
+                          </p>
+                        </div>
 
-                      {/* Butonlar */}
-                      <div className="space-y-3">
-                        <button className="w-full border-2 border-white text-white font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center gap-2">
-                          <span className="text-xl">Rezervasyon Yap</span>
-                        </button>
+                        {/* Butonlar */}
+                        <div className="space-y-3">
+                          <button className="w-full border-2 border-white text-white font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center gap-2">
+                            <span className="text-xl">Rezervasyon Yap</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -186,22 +265,11 @@ export function SeminarPage() {
             SEMİNER HAKKINDA
           </h2>
           <p className="pt-12 px-10 text-lg text-gray-300 font-light">
-            Sanat tarihçisi ve arkeolog Prof. Dr. Tuna Şare Ağtürk tarafından
-            özenle hazırlanan “Antik Dünyanın Yedi Harikası” eğitiminde insanlık
-            tarihinin en büyüleyici ve gizemli duraklarına doğru bir yolculuğa
-            çıkacaksınız. Bu eğitimde, binlerce yıl boyunca varlığını sürdürmeye
-            devam eden, antik dünyanın mühendislik ve sanat şaheserlerinin
-            hikayesini kültürel, politik ve sanatsal bağlamlarıyla ele
-            alacaksınız. İnsanoğlunun ölümsüzlük arayışını, dünyada iz bırakma
-            çabasını ve Batı medeniyetinin temel taşlarını oluşturan yedi ikonik
-            yapıyı en ince detaylarıyla keşfedeceksiniz. Rodos’tan Mısır’a,
-            Babil’den İskenderiye’ye uzanan bu keşifte, antik dönem
-            teknolojisinin sınırlarını zorlayan bu “harikaların” nasıl inşa
-            edildiğini ve neden “mükemmelliğin” sembolü olarak kabul
-            edildiklerini inceleyeceksiniz.
+            {seminar.detailedDescription || seminar.description}
           </p>
           <button className="flex items-center gap-2 text-white text-sm pt-4 justify-self-end mr-5 mb-5">
             <span>Daha fazla oku</span>
+
             <svg
               className="w-4 h-4"
               fill="none"
@@ -224,108 +292,33 @@ export function SeminarPage() {
           </h2>
           <div className="p-5 space-y-3">
             {/* Liste öğeleri */}
-            <div className="flex items-center gap-3 text-white">
-              <div className="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center flex-shrink-0">
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+            {topics.length > 0 ? (
+              topics.map((topic, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 text-gray-300"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-              <span className="text-gray-300 text-lg">
-                Yedi Harikanın Kültürel Mirası
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 text-gray-300">
-              <div className="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center flex-shrink-0">
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-              <span className="white text-lg">Harika Kavramının Doğuşu</span>
-            </div>
-
-            <div className="flex items-center gap-3 text-gray-300">
-              <div className="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center flex-shrink-0">
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-              <span className="text-gray-300 text-lg">
-                Kültürel Bellek ve Hafıza
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 ttext-gray-300">
-              <div className="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center flex-shrink-0">
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-              <span className="text-gray-300 text-lg">
-                Mitoloji ve Sanat İlişkisi
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 text-white">
-              <div className="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center flex-shrink-0">
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-              <span className="text-gray-300 text-lg">
-                Yedi Harikanın Ardındaki Sembolizm
-              </span>
-            </div>
+                  <div className="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center flex-shrink-0">
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                  <span className="text-gray-300 text-lg">{topic}</span>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400 text-sm">Henüz konu eklenmemiş</p>
+            )}
 
             {/* Daha fazla oku butonu */}
             <button className="flex items-center gap-2 text-white text-sm pt-4 justify-self-end">
