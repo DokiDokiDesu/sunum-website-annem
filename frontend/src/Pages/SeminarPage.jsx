@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { API_ENDPOINTS } from "./config/api";
+import { API_ENDPOINTS } from "../config/api";
 import { Header } from "../Components/Header";
 import dayjs from "dayjs";
 import "dayjs/locale/tr";

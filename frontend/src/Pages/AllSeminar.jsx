@@ -1,6 +1,6 @@
 import { Header } from "../Components/Header";
 import { useState, useEffect } from "react";
-import { API_ENDPOINTS } from "./config/api";
+import { API_ENDPOINTS } from "../config/api";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 export function AllSeminar() {
