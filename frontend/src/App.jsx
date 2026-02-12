@@ -10,7 +10,7 @@ import { AllSeminar } from "./Pages/AllSeminar";
 import { Contact } from "./Pages/Contact";
 import { AdminLogin } from "./Pages/Admin/AdminLogin";
 import { AdminDashboard } from "./Pages/Admin/AdminDashboard";
-import API_BASE_URL from "./config/api";
+import { API_BASE_URL } from "./config/api";
 
 // Build version to force cache invalidation
 const BUILD_VERSION = "2.0.1";

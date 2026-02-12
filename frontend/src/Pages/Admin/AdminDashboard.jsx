@@ -6,7 +6,7 @@ import { AdminManagement } from "./AdminManagement";
 import { ActivityLogs } from "./ActivityLogs";
 import { AdminProfile } from "./AdminProfile";
 import { VotingManagement } from "./VotingManagement";
-import API_BASE_URL from "../../config/api";
+import { API_BASE_URL } from "../../config/api";
 
 dayjs.locale("tr");
 
