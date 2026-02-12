@@ -5,6 +5,7 @@ import {
   ChartBarIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
+import { API_BASE_URL } from "../../config/api";
 
 export function VotingManagement() {
   const [topics, setTopics] = useState([
@@ -24,14 +25,11 @@ export function VotingManagement() {
   const fetchTopics = async () => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await fetch(
-        "http://localhost:5000/api/voting/admin/all",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await fetch(`${API_BASE_URL}/api/voting/admin/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -94,7 +92,7 @@ export function VotingManagement() {
       }
 
       const token = localStorage.getItem("adminToken");
-      const response = await fetch("http://localhost:5000/api/voting/admin", {
+      const response = await fetch(`${API_BASE_URL}/api/voting/admin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -146,7 +144,7 @@ export function VotingManagement() {
       setLoading(true);
       const token = localStorage.getItem("adminToken");
       const response = await fetch(
-        `http://localhost:5000/api/voting/admin/${topic.id}`,
+        `${API_BASE_URL}/api/voting/admin/${topic.id}`,
         {
           method: "DELETE",
           headers: {
@@ -184,7 +182,7 @@ export function VotingManagement() {
       setLoading(true);
       const token = localStorage.getItem("adminToken");
       const response = await fetch(
-        "http://localhost:5000/api/voting/admin/reset-votes",
+        `${API_BASE_URL}/api/voting/admin/reset-votes`,
         {
           method: "POST",
           headers: {

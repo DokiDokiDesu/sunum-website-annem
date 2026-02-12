@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { API_ENDPOINTS } from "../config/api";
 
 export function Header() {
   const [openDiscoverMenu, setOpenDiscoverMenu] = useState(false);
@@ -15,9 +16,7 @@ export function Header() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/categories?active=true",
-        );
+        const response = await fetch(`${API_ENDPOINTS.categories}?active=true`);
         const data = await response.json();
         // Sadece menüde gösterilecek kategorileri filtrele
         const menuCategories = data.filter((cat) => cat.showInMenu);

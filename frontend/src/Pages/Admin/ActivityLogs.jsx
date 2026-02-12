@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale/tr";
+import { API_BASE_URL } from "../../config/api";
 
 dayjs.locale("tr");
 
@@ -29,7 +30,7 @@ export function ActivityLogs({ token }) {
         if (filters[key]) params.append(key, filters[key]);
       });
 
-      const response = await fetch(`http://localhost:5000/api/logs?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/logs?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -43,7 +44,7 @@ export function ActivityLogs({ token }) {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/logs/stats", {
+      const response = await fetch(`${API_BASE_URL}/api/logs/stats`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();

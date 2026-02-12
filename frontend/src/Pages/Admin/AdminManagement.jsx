@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale/tr";
+import { API_BASE_URL } from "../../config/api";
 
 dayjs.locale("tr");
 
@@ -24,7 +25,7 @@ export function AdminManagement({ token }) {
 
   const fetchAdmins = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/admins", {
+      const response = await fetch(`${API_BASE_URL}/api/admins`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -42,8 +43,8 @@ export function AdminManagement({ token }) {
 
     try {
       const url = editingAdmin
-        ? `http://localhost:5000/api/admins/${editingAdmin.id}`
-        : "http://localhost:5000/api/admins";
+        ? `${API_BASE_URL}/api/admins/${editingAdmin.id}`
+        : `${API_BASE_URL}/api/admins`;
 
       const method = editingAdmin ? "PUT" : "POST";
 
@@ -84,7 +85,7 @@ export function AdminManagement({ token }) {
     if (!confirm("Bu admini silmek istediğinizden emin misiniz?")) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admins/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/admins/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -106,7 +107,7 @@ export function AdminManagement({ token }) {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/admins/${id}/reset-password`,
+        `${API_BASE_URL}/api/admins/${id}/reset-password`,
         {
           method: "PUT",
           headers: {
