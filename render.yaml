@@ -29,11 +29,8 @@ services:
   - type: web
     name: sunum-website-frontend
     env: static
-    buildCommand: cd frontend && npm install && npm run build
+    buildCommand: cd frontend && npm install && VITE_API_URL=https://sunum-website-backend.onrender.com npm run build
     staticPublishPath: ./frontend/dist
-    envVars:
-      - key: VITE_API_URL
-        value: https://sunum-website-backend.onrender.com
 
 databases:
   - name: sunum-website-db
