@@ -33,6 +33,9 @@ const allowedOrigins = [
   "http://localhost:5173", // Local development frontend
   "http://localhost:5174",
   "http://localhost:3000",
+  "https://sunum-website-frontend.onrender.com", // Render frontend
+  "https://platonacademia.com", // Custom domain
+  "https://www.platonacademia.com", // Custom domain with www
   process.env.FRONTEND_URL, // Production frontend (from env)
 ].filter(Boolean); // Remove undefined values
 
