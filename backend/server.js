@@ -87,13 +87,9 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log("✅ Veritabanı bağlantısı başarılı");
 
-    // Model senkronizasyonu - PostgreSQL için doğru sırada
-    // Foreign key bağımlılıklarını göz önünde bulundurarak sıralı sync
-    await Admin.sync();
-    await Category.sync();
-    await Seminar.sync();
-    await VotingTopic.sync();
-    await ActivityLog.sync(); // En son, çünkü Admin'e referans veriyor
+    // Model senkronizasyonu - PostgreSQL için force: false ile güvenli şekilde
+    // Foreign key constraints ile sorun yaşanmaması için sequelize.sync() kullanıyoruz
+    await sequelize.sync({ force: false });
     console.log("✅ Veritabanı senkronizasyonu tamamlandı");
 
     // Varsayılan admin oluştur (eğer yoksa)

@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
+import Admin from "./Admin.js";
 
 const ActivityLog = sequelize.define(
   "ActivityLog",
@@ -12,10 +13,6 @@ const ActivityLog = sequelize.define(
     adminId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: "admins",
-        key: "id",
-      },
     },
     adminUsername: {
       type: DataTypes.STRING,
@@ -59,5 +56,11 @@ const ActivityLog = sequelize.define(
     updatedAt: false, // Log kayıtları güncellenemez
   },
 );
+
+// İlişkileri tanımla
+ActivityLog.belongsTo(Admin, {
+  foreignKey: "adminId",
+  as: "admin",
+});
 
 export default ActivityLog;
