@@ -76,9 +76,7 @@ export function SeminarPage() {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: seminar.image
-              ? `url(http://localhost:5000${seminar.image})`
-              : "url(/ornek-kart.jpg)",
+            backgroundImage: `url(${seminar.image || "/ornek-kart.jpg"})`,
           }}
         >
           {/* Koyu overlay - soldan sağa gradient */}

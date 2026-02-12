@@ -1224,7 +1224,7 @@ Kültürel Bellek ve Hafıza"
                     <div className="flex items-start gap-4">
                       {seminar.image && (
                         <img
-                          src={`http://localhost:5000${seminar.image}`}
+                          src={seminar.image}
                           alt={seminar.title}
                           className="w-24 h-24 object-cover rounded"
                         />

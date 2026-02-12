@@ -61,6 +61,10 @@ const Seminar = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    cloudinaryId: {
+      type: DataTypes.STRING,
+      allowNull: true, // Cloudinary public_id
+    },
     dayOfWeek: {
       type: DataTypes.STRING,
       allowNull: true, // Planlama sırasında girilecek

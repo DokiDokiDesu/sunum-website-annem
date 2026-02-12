@@ -189,11 +189,7 @@ export function AllSeminar() {
                 >
                   <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-4">
                     <img
-                      src={
-                        seminar.image
-                          ? `http://localhost:5000${seminar.image}`
-                          : "/ornek-kart.jpg"
-                      }
+                      src={seminar.image || "/ornek-kart.jpg"}
                       alt={seminar.title}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />

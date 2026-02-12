@@ -1,30 +1,23 @@
 import multer from "multer";
-import path from "path";
-import { fileURLToPath } from "url";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "../config/cloudinary.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Storage yapılandırması
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "..", "uploads"));
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, "seminar-" + uniqueSuffix + path.extname(file.originalname));
+// Cloudinary storage yapılandırması
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "seminars", // Cloudinary'de dosyaların kaydedileceği klasör
+    allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
+    transformation: [{ width: 1200, height: 800, crop: "limit" }], // Otomatik boyutlandırma
   },
 });
 
 // Dosya filtreleme
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|gif|webp/;
-  const extname = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase(),
-  );
   const mimetype = allowedTypes.test(file.mimetype);
 
-  if (mimetype && extname) {
+  if (mimetype) {
     return cb(null, true);
   } else {
     cb(new Error("Sadece resim dosyaları yüklenebilir!"));

@@ -1,12 +1,7 @@
 import Seminar from "../models/Seminar.js";
 import ActivityLog from "../models/ActivityLog.js";
 import { Op } from "sequelize";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import cloudinary from "../config/cloudinary.js";
 
 // Geçmiş tarihli seminerleri kontrol et ve güncelle
 export const checkAndUpdateExpiredSeminars = async () => {
@@ -156,7 +151,8 @@ export const createSeminar = async (req, res) => {
   try {
     const seminarData = {
       ...req.body,
-      image: req.file ? `/uploads/${req.file.filename}` : null,
+      image: req.file ? req.file.path : null, // Cloudinary URL
+      cloudinaryId: req.file ? req.file.filename : null, // Cloudinary public_id
     };
 
     const seminar = await Seminar.create(seminarData);
@@ -175,11 +171,12 @@ export const updateSeminar = async (req, res) => {
       return res.status(404).json({ message: "Seminer bulunamadı" });
     }
 
-    // Eski resmi sil (yeni resim yüklendiyse)
-    if (req.file && seminar.image) {
-      const oldImagePath = path.join(__dirname, "..", seminar.image);
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
+    // Eski resmi Cloudinary'den sil (yeni resim yüklendiyse)
+    if (req.file && seminar.cloudinaryId) {
+      try {
+        await cloudinary.uploader.destroy(seminar.cloudinaryId);
+      } catch (error) {
+        console.error("Cloudinary'den resim silinemedi:", error);
       }
     }
 
@@ -188,7 +185,8 @@ export const updateSeminar = async (req, res) => {
     };
 
     if (req.file) {
-      updateData.image = `/uploads/${req.file.filename}`;
+      updateData.image = req.file.path; // Cloudinary URL
+      updateData.cloudinaryId = req.file.filename; // Cloudinary public_id
     }
 
     await seminar.update(updateData);
@@ -207,11 +205,12 @@ export const deleteSeminar = async (req, res) => {
       return res.status(404).json({ message: "Seminer bulunamadı" });
     }
 
-    // Resmi sil
-    if (seminar.image) {
-      const imagePath = path.join(__dirname, "..", seminar.image);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
+    // Cloudinary'den resmi sil
+    if (seminar.cloudinaryId) {
+      try {
+        await cloudinary.uploader.destroy(seminar.cloudinaryId);
+      } catch (error) {
+        console.error("Cloudinary'den resim silinemedi:", error);
       }
     }
 

@@ -82,63 +82,6 @@ const startServer = async () => {
       );
     }
 
-    // Varsayılan kategorileri oluştur (eğer yoksa)
-    const categoryCount = await Category.count();
-    if (categoryCount === 0) {
-      const defaultCategories = [
-        { name: "Sanat", slug: "sanat", showInMenu: true, order: 10 },
-        { name: "Tarih", slug: "tarih", showInMenu: true, order: 11 },
-        { name: "Bilim", slug: "bilim", showInMenu: true, order: 12 },
-        { name: "Teknoloji", slug: "teknoloji", showInMenu: true, order: 13 },
-        { name: "Satış", slug: "satis", showInMenu: true, order: 14 },
-        {
-          name: "Pazarlama",
-          slug: "pazarlama",
-          showInMenu: true,
-          highlight: true,
-          order: 15,
-        },
-        {
-          name: "Kişisel Gelişim",
-          slug: "kisisel-gelisim",
-          showInMenu: true,
-          order: 16,
-        },
-        { name: "Sinema", slug: "sinema", showInMenu: true, order: 17 },
-        {
-          name: "Finans",
-          slug: "finans",
-          showInMenu: true,
-          highlight: true,
-          order: 18,
-        },
-        { name: "Sağlık", slug: "saglik", showInMenu: true, order: 19 },
-        { name: "Müzik", slug: "muzik", showInMenu: true, order: 20 },
-        {
-          name: "Girişimcilik",
-          slug: "girisimcilik",
-          showInMenu: true,
-          order: 21,
-        },
-        { name: "Gastronomi", slug: "gastronomi", showInMenu: true, order: 22 },
-        {
-          name: "Yaşam Kültürü",
-          slug: "yasam-kulturu",
-          showInMenu: true,
-          order: 23,
-        },
-        { name: "Liderlik", slug: "liderlik", showInMenu: true, order: 24 },
-        {
-          name: "Yetkinlik Gelişimi",
-          slug: "yetkinlik-gelisimi",
-          showInMenu: true,
-          order: 25,
-        },
-      ];
-      await Category.bulkCreate(defaultCategories);
-      console.log("✅ Varsayılan kategoriler oluşturuldu");
-    }
-
     // Server başlatıldığında ilk kontrol
     const expiredCount = await checkAndUpdateExpiredSeminars();
     if (expiredCount > 0) {

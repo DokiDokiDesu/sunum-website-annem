@@ -94,7 +94,7 @@ export function Popular() {
                 <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
                   style={{
-                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url(${seminar.image ? `http://localhost:5000${seminar.image}` : "/ornek-kart.jpg"})`,
+                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url(${seminar.image || "/ornek-kart.jpg"})`,
                   }}
                 ></div>
 
