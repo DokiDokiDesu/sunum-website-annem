@@ -12,7 +12,7 @@ export function AdminLogin() {
     // Eğer zaten giriş yapılmışsa admin panel'e yönlendir
     const token = localStorage.getItem("adminToken");
     if (token) {
-      navigate("/admin/dashboard");
+      navigate("/admin");
     }
   }, [navigate]);
 
@@ -38,7 +38,7 @@ export function AdminLogin() {
 
       localStorage.setItem("adminToken", data.token);
       localStorage.setItem("adminUser", JSON.stringify(data.admin));
-      navigate("/admin/dashboard");
+      navigate("/admin");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -52,9 +52,6 @@ export function AdminLogin() {
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">Admin Paneli</h1>
-            <p className="text-gray-400">
-              Seminerleri yönetmek için giriş yapın
-            </p>
           </div>
 
           {error && (
@@ -101,11 +98,7 @@ export function AdminLogin() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm">
-              Varsayılan: admin / admin123
-            </p>
-          </div>
+          <div className="mt-6 text-center"></div>
         </div>
       </div>
     </div>

@@ -21,7 +21,7 @@ function App() {
         <Route path="/all-seminar" element={<AllSeminar />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
   );

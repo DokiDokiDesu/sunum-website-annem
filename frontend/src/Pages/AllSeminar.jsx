@@ -1,17 +1,26 @@
 import { Header } from "../Components/Header";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export function AllSeminar() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [seminars, setSeminars] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchSeminars();
-  }, []);
+    fetchCategories();
+
+    // URL'den kategori parametresini al
+    const categoryParam = searchParams.get("category");
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [searchParams]);
 
   const fetchSeminars = async () => {
     try {
@@ -25,20 +34,17 @@ export function AllSeminar() {
     }
   };
 
-  const categories = [
-    { id: "all", name: "Tüm Seminerler", type: "status" },
-    { id: "upcoming", name: "Yaklaşan Seminerler", type: "status" },
-    { id: "popular", name: "En Çok Sevilenler", type: "status" },
-    { id: "new", name: "Yeni Eklenenler", type: "status" },
-    { id: "divider", name: "─────────", type: "divider" },
-    { id: "sanat", name: "Sanat", type: "content" },
-    { id: "tarih", name: "Tarih", type: "content" },
-    { id: "bilim", name: "Bilim", type: "content" },
-    { id: "teknoloji", name: "Teknoloji", type: "content" },
-    { id: "satis", name: "Satış", type: "content" },
-    { id: "pazarlama", name: "Pazarlama", type: "content" },
-    { id: "kisisel-gelisim", name: "Kişisel Gelişim", type: "content" },
-  ];
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/categories?active=true",
+      );
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("Kategoriler yüklenemedi:", error);
+    }
+  };
 
   const filteredSeminars = seminars.filter((seminar) => {
     const matchesSearch = seminar.title
@@ -54,12 +60,12 @@ export function AllSeminar() {
     } else if (selectedCategory === "popular") {
       matchesCategory = seminar.isPopular === true;
     } else if (selectedCategory === "new") {
-      // Son 30 gün içinde eklenenler veya yeni işaretlenenler
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const seminarDate = new Date(seminar.createdAt);
       matchesCategory = seminarDate >= thirtyDaysAgo;
     } else {
+      // İçerik kategorileri - slug ile eşleştir
       matchesCategory = seminar.category === selectedCategory;
     }
 
@@ -108,34 +114,67 @@ export function AllSeminar() {
           {/* Sol Menü - Kategoriler */}
           <div className="w-64 flex-shrink-0">
             <div className="space-y-2">
-              {categories.map((category) => {
-                if (category.type === "divider") {
-                  return (
-                    <div
-                      key={category.id}
-                      className="py-2 text-gray-600 text-center pointer-events-none"
-                    >
-                      {category.name}
-                    </div>
-                  );
-                }
+              {/* Sabit Durum Filtreleri */}
+              <button
+                onClick={() => setSelectedCategory("all")}
+                className={`block w-full text-left py-2 px-4 rounded transition-colors ${
+                  selectedCategory === "all"
+                    ? "bg-red-600 text-white font-semibold"
+                    : "text-white hover:bg-gray-800"
+                }`}
+              >
+                Tüm Seminerler
+              </button>
+              <button
+                onClick={() => setSelectedCategory("upcoming")}
+                className={`block w-full text-left py-2 px-4 rounded transition-colors ${
+                  selectedCategory === "upcoming"
+                    ? "bg-red-600 text-white font-semibold"
+                    : "text-white hover:bg-gray-800"
+                }`}
+              >
+                Yaklaşan Seminerler
+              </button>
+              <button
+                onClick={() => setSelectedCategory("popular")}
+                className={`block w-full text-left py-2 px-4 rounded transition-colors ${
+                  selectedCategory === "popular"
+                    ? "bg-red-600 text-white font-semibold"
+                    : "text-white hover:bg-gray-800"
+                }`}
+              >
+                En Çok Sevilenler
+              </button>
+              <button
+                onClick={() => setSelectedCategory("new")}
+                className={`block w-full text-left py-2 px-4 rounded transition-colors ${
+                  selectedCategory === "new"
+                    ? "bg-red-600 text-white font-semibold"
+                    : "text-white hover:bg-gray-800"
+                }`}
+              >
+                Yeni Eklenenler
+              </button>
 
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`block w-full text-left py-2 px-4 rounded transition-colors ${
-                      selectedCategory === category.id
-                        ? "bg-red-600 text-white font-semibold"
-                        : category.type === "status"
-                          ? "text-white hover:bg-gray-800"
-                          : "text-gray-400 hover:bg-gray-800 hover:text-white pl-6"
-                    }`}
-                  >
-                    {category.name}
-                  </button>
-                );
-              })}
+              {/* Ayırıcı */}
+              <div className="py-2 text-gray-600 text-center pointer-events-none">
+                ─────────
+              </div>
+
+              {/* Dinamik İçerik Kategorileri */}
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.slug)}
+                  className={`block w-full text-left py-2 px-4 rounded transition-colors pl-6 ${
+                    selectedCategory === category.slug
+                      ? "bg-red-600 text-white font-semibold"
+                      : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
             </div>
           </div>
 

@@ -11,15 +11,26 @@ export function AdminDashboard() {
   const [showForm, setShowForm] = useState(false);
   const [editingSeminar, setEditingSeminar] = useState(null);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState("content"); // 'content' veya 'schedule'
+  const [activeTab, setActiveTab] = useState("content"); // 'content', 'schedule', 'popular', 'categories'
   const navigate = useNavigate();
+
+  // Category states
+  const [categories, setCategories] = useState([]);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [categoryFormData, setCategoryFormData] = useState({
+    name: "",
+    slug: "",
+    showInMenu: true,
+    highlight: false,
+    order: 0,
+  });
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     detailedDescription: "",
     topics: "",
-    category: "sanat",
+    category: "",
     duration: "",
     price: "",
   });
@@ -42,6 +53,7 @@ export function AdminDashboard() {
       return;
     }
     fetchSeminars();
+    fetchCategories();
   }, [navigate]);
 
   const fetchSeminars = async () => {
@@ -54,6 +66,22 @@ export function AdminDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/categories");
+      const data = await response.json();
+      setCategories(data);
+    } catch (err) {
+      console.error("Kategoriler yüklenemedi:", err);
+    }
+  };
+
+  // Kategori slug'ından isim bulma
+  const getCategoryName = (slug) => {
+    const category = categories.find((cat) => cat.slug === slug);
+    return category ? category.name : slug;
   };
 
   const handleLogout = () => {
@@ -238,7 +266,7 @@ export function AdminDashboard() {
       description: "",
       detailedDescription: "",
       topics: "",
-      category: "sanat",
+      category: "",
       duration: "",
       price: "",
     });
@@ -254,6 +282,101 @@ export function AdminDashboard() {
     });
     setImageFile(null);
     setEditingSeminar(null);
+  };
+
+  const resetCategoryForm = () => {
+    setCategoryFormData({
+      name: "",
+      slug: "",
+      showInMenu: true,
+      highlight: false,
+      order: 0,
+    });
+    setEditingCategory(null);
+  };
+
+  const handleCategorySubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("adminToken");
+
+    try {
+      const url = editingCategory
+        ? `http://localhost:5000/api/categories/${editingCategory.id}`
+        : "http://localhost:5000/api/categories";
+
+      const response = await fetch(url, {
+        method: editingCategory ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(categoryFormData),
+      });
+
+      if (!response.ok) throw new Error("İşlem başarısız");
+
+      await fetchCategories();
+      resetCategoryForm();
+      setShowForm(false);
+    } catch (err) {
+      setError("Kategori kaydedilemedi");
+    }
+  };
+
+  const handleCategoryEdit = (category) => {
+    setEditingCategory(category);
+    setCategoryFormData({
+      name: category.name,
+      slug: category.slug,
+      showInMenu: category.showInMenu,
+      highlight: category.highlight,
+      order: category.order,
+    });
+    setShowForm(true);
+  };
+
+  const handleCategoryDelete = async (id) => {
+    if (!confirm("Bu kategoriyi silmek istediğinizden emin misiniz?")) return;
+
+    const token = localStorage.getItem("adminToken");
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/categories/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) throw new Error("Silme başarısız");
+
+      await fetchCategories();
+    } catch (err) {
+      setError("Kategori silinemedi");
+    }
+  };
+
+  const handleCategoryToggle = async (id) => {
+    const token = localStorage.getItem("adminToken");
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/categories/${id}/toggle`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) throw new Error("İşlem başarısız");
+
+      await fetchCategories();
+    } catch (err) {
+      setError("Kategori durumu değiştirilemedi");
+    }
   };
 
   if (loading) {
@@ -335,6 +458,20 @@ export function AdminDashboard() {
           >
             ⭐ Popüler Seminerler
           </button>
+          <button
+            onClick={() => {
+              setActiveTab("categories");
+              setShowForm(false);
+              resetCategoryForm();
+            }}
+            className={`px-6 py-3 rounded-lg font-semibold transition ${
+              activeTab === "categories"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+            }`}
+          >
+            📊 Kategoriler
+          </button>
         </div>
 
         {/* Add Button */}
@@ -348,6 +485,20 @@ export function AdminDashboard() {
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
             >
               {showForm ? "İptal" : "+ Yeni Seminer İçeriği Ekle"}
+            </button>
+          </div>
+        )}
+
+        {activeTab === "categories" && (
+          <div className="mb-6">
+            <button
+              onClick={() => {
+                resetCategoryForm();
+                setShowForm(!showForm);
+              }}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
+            >
+              {showForm ? "İptal" : "+ Yeni Kategori Ekle"}
             </button>
           </div>
         )}
@@ -433,15 +584,21 @@ Kültürel Bellek ve Hafıza"
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white focus:outline-none focus:border-blue-500"
                 >
-                  <option value="sanat">Sanat</option>
-                  <option value="tarih">Tarih</option>
-                  <option value="bilim">Bilim</option>
-                  <option value="teknoloji">Teknoloji</option>
-                  <option value="satis">Satış</option>
-                  <option value="pazarlama">Pazarlama</option>
-                  <option value="kisisel-gelisim">Kişisel Gelişim</option>
+                  <option value="">Kategori seçin...</option>
+                  {categories
+                    .filter((cat) => cat.isActive)
+                    .sort(
+                      (a, b) =>
+                        a.order - b.order || a.name.localeCompare(b.name),
+                    )
+                    .map((category) => (
+                      <option key={category.id} value={category.slug}>
+                        {category.name}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -696,7 +853,7 @@ Kültürel Bellek ve Hafıza"
                     </td>
                     <td className="px-6 py-4 text-gray-300">
                       <span className="px-2 py-1 bg-blue-600/20 text-blue-400 rounded text-xs">
-                        {seminar.category}
+                        {getCategoryName(seminar.category)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -807,7 +964,7 @@ Kültürel Bellek ve Hafıza"
                             </h4>
                             <div className="flex gap-2 items-center text-xs">
                               <span className="px-2 py-0.5 bg-blue-600/20 text-blue-400 rounded">
-                                {seminar.category}
+                                {getCategoryName(seminar.category)}
                               </span>
                               {seminar.duration && (
                                 <span className="text-gray-400">
@@ -870,7 +1027,7 @@ Kültürel Bellek ve Hafıza"
                             </h4>
                             <div className="flex gap-2 items-center text-xs mb-2">
                               <span className="px-2 py-0.5 bg-blue-600/20 text-blue-400 rounded">
-                                {seminar.category}
+                                {getCategoryName(seminar.category)}
                               </span>
                               {seminar.isPopular && (
                                 <span className="px-2 py-0.5 bg-yellow-600/20 text-yellow-400 rounded">
@@ -972,22 +1129,8 @@ Kültürel Bellek ve Hafıza"
                         </h3>
 
                         <div className="flex gap-2 mb-3">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              seminar.category === "Genel"
-                                ? "bg-blue-900 text-blue-300"
-                                : seminar.category === "Kadın Sağlığı"
-                                  ? "bg-pink-900 text-pink-300"
-                                  : seminar.category === "Gelişim ve Psikoloji"
-                                    ? "bg-purple-900 text-purple-300"
-                                    : seminar.category === "İlişkiler"
-                                      ? "bg-red-900 text-red-300"
-                                      : seminar.category === "Anne Sağlığı"
-                                        ? "bg-green-900 text-green-300"
-                                        : "bg-gray-700 text-gray-300"
-                            }`}
-                          >
-                            {seminar.category}
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-600/20 text-blue-400">
+                            {getCategoryName(seminar.category)}
                           </span>
 
                           {seminar.isScheduled && (
@@ -1053,6 +1196,219 @@ Kültürel Bellek ve Hafıza"
                     </div>
                   </div>
                 ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Categories Tab */}
+        {activeTab === "categories" && (
+          <div>
+            {/* Category Form */}
+            {showForm && (
+              <div className="bg-gray-900 rounded-lg p-6 mb-8 border border-gray-800">
+                <h2 className="text-white text-xl font-bold mb-4">
+                  {editingCategory ? "Kategori Düzenle" : "Yeni Kategori"}
+                </h2>
+                <form
+                  onSubmit={handleCategorySubmit}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                >
+                  <div>
+                    <label className="block text-gray-300 text-sm mb-2">
+                      Kategori Adı *
+                    </label>
+                    <input
+                      type="text"
+                      value={categoryFormData.name}
+                      onChange={(e) =>
+                        setCategoryFormData({
+                          ...categoryFormData,
+                          name: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white focus:outline-none focus:border-blue-500"
+                      placeholder="Örn: Teknoloji"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-300 text-sm mb-2">
+                      Slug (URL) *
+                    </label>
+                    <input
+                      type="text"
+                      value={categoryFormData.slug}
+                      onChange={(e) =>
+                        setCategoryFormData({
+                          ...categoryFormData,
+                          slug: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white focus:outline-none focus:border-blue-500"
+                      placeholder="Örn: teknoloji"
+                      required
+                    />
+                    <p className="text-gray-500 text-xs mt-1">
+                      Küçük harf, tire kullanın. Örn: kisisel-gelisim
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-300 text-sm mb-2">
+                      Sıralama
+                    </label>
+                    <input
+                      type="number"
+                      value={categoryFormData.order}
+                      onChange={(e) =>
+                        setCategoryFormData({
+                          ...categoryFormData,
+                          order: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white focus:outline-none focus:border-blue-500"
+                      placeholder="0"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <div className="flex gap-6">
+                      <label className="flex items-center text-gray-300">
+                        <input
+                          type="checkbox"
+                          checked={categoryFormData.showInMenu}
+                          onChange={(e) =>
+                            setCategoryFormData({
+                              ...categoryFormData,
+                              showInMenu: e.target.checked,
+                            })
+                          }
+                          className="mr-2"
+                        />
+                        Header Menüsünde Göster (Keşfet)
+                      </label>
+
+                      <label className="flex items-center text-gray-300">
+                        <input
+                          type="checkbox"
+                          checked={categoryFormData.highlight}
+                          onChange={(e) =>
+                            setCategoryFormData({
+                              ...categoryFormData,
+                              highlight: e.target.checked,
+                            })
+                          }
+                          className="mr-2"
+                        />
+                        Vurgula (Kırmızı)
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <button
+                      type="submit"
+                      className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
+                    >
+                      {editingCategory ? "Güncelle" : "Kaydet"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Categories List */}
+            <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
+              <div className="px-6 py-4 bg-gray-800 border-b border-gray-700">
+                <h3 className="text-white font-semibold">📊 Tüm Kategoriler</h3>
+                <p className="text-gray-400 text-sm">
+                  Header menüsü ve filtrelerde kullanılan içerik kategorilerini
+                  yönetin
+                </p>
+              </div>
+              <table className="w-full">
+                <thead className="bg-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-gray-300">Ad</th>
+                    <th className="px-6 py-3 text-left text-gray-300">Slug</th>
+                    <th className="px-6 py-3 text-left text-gray-300">
+                      Header Menüsü
+                    </th>
+                    <th className="px-6 py-3 text-left text-gray-300">Sıra</th>
+                    <th className="px-6 py-3 text-left text-gray-300">Durum</th>
+                    <th className="px-6 py-3 text-left text-gray-300">
+                      İşlemler
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                  {categories.map((category) => (
+                    <tr key={category.id} className="hover:bg-gray-800/50">
+                      <td className="px-6 py-4">
+                        <span
+                          className={`font-medium ${
+                            category.highlight ? "text-red-400" : "text-white"
+                          }`}
+                        >
+                          {category.name}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-400 font-mono text-sm">
+                        {category.slug}
+                      </td>
+                      <td className="px-6 py-4">
+                        {category.showInMenu ? (
+                          <span className="px-2 py-1 bg-green-600/20 text-green-400 rounded text-xs">
+                            ✓ Görünür
+                          </span>
+                        ) : (
+                          <span className="px-2 py-1 bg-gray-600/20 text-gray-400 rounded text-xs">
+                            × Gizli
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-gray-300">
+                        {category.order}
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => handleCategoryToggle(category.id)}
+                          className={`px-2 py-1 rounded text-xs ${
+                            category.isActive
+                              ? "bg-green-600/20 text-green-400"
+                              : "bg-gray-600/20 text-gray-400"
+                          }`}
+                        >
+                          {category.isActive ? "✓ Aktif" : "✗ Pasif"}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleCategoryEdit(category)}
+                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm"
+                          >
+                            Düzenle
+                          </button>
+                          <button
+                            onClick={() => handleCategoryDelete(category.id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm"
+                          >
+                            Sil
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {categories.length === 0 && (
+                <div className="text-center py-12 text-gray-400">
+                  Henüz kategori eklenmemiş
+                </div>
               )}
             </div>
           </div>

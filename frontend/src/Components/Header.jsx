@@ -7,8 +7,27 @@ export function Header() {
   const searchRef = useRef(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showSearchInput, setShowSearchInput] = useState(false);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Kategorileri API'den çek
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/categories?active=true",
+        );
+        const data = await response.json();
+        // Sadece menüde gösterilecek kategorileri filtrele
+        const menuCategories = data.filter((cat) => cat.showInMenu);
+        setCategories(menuCategories);
+      } catch (error) {
+        console.error("Kategoriler yüklenemedi:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Sayfaya göre arka plan rengini belirle
   const getBackgroundColor = () => {
@@ -60,21 +79,6 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const categories = [
-    { name: "Sinema" },
-    { name: "Tarih" },
-    { name: "Finans", highlight: true },
-    { name: "Sağlık" },
-    { name: "Müzik" },
-    { name: "Girişimcilik" },
-    { name: "Gastronomi" },
-    { name: "Yaşam Kültürü" },
-    { name: "Satış" },
-    { name: "Pazarlama" },
-    { name: "Liderlik" },
-    { name: "Yetkinlik Gelişimi" },
-  ];
-
   return (
     <div
       className={`flex h-16 w-full fixed z-50 top-0 left-0 transition-all duration-300 items-center ${getBackgroundColor()}`}
@@ -104,9 +108,13 @@ export function Header() {
                           animate-in fade-in slide-in-from-top-2 duration-400 z-10"
           >
             <div className="grid grid-cols-2 gap-y-3 text-sm">
-              {categories.map((item, i) => (
+              {categories.map((item) => (
                 <button
-                  key={i}
+                  key={item.id}
+                  onClick={() => {
+                    navigate(`/all-seminar?category=${item.slug}`);
+                    setOpenDiscoverMenu(false);
+                  }}
                   className={`text-left transition hover:text-white ${
                     item.highlight
                       ? "text-red-500 font-semibold"
