@@ -13,7 +13,7 @@ import { AdminDashboard } from "./Pages/Admin/AdminDashboard";
 import API_BASE_URL from "./config/api";
 
 // Build version to force cache invalidation
-const BUILD_VERSION = "1.0.2";
+const BUILD_VERSION = "2.0.0";
 console.log("==========================================");
 console.log("APP LOADED - BUILD VERSION:", BUILD_VERSION);
 console.log("API BASE URL:", API_BASE_URL);

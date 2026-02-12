@@ -1,5 +1,6 @@
 import { Header } from "../Components/Header";
 import { useState, useEffect } from "react";
+import { API_ENDPOINTS } from "./config/api";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 export function AllSeminar() {
@@ -24,7 +25,7 @@ export function AllSeminar() {
 
   const fetchSeminars = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/seminars");
+      const response = await fetch(API_ENDPOINTS.seminars);
       const data = await response.json();
       setSeminars(data);
     } catch (error) {
@@ -36,9 +37,7 @@ export function AllSeminar() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/categories?active=true",
-      );
+      const response = await fetch(`${API_ENDPOINTS.categories}?active=true`);
       const data = await response.json();
       setCategories(data);
     } catch (error) {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_ENDPOINTS } from "../../config/api";
 import dayjs from "dayjs";
 import "dayjs/locale/tr";
 
@@ -31,7 +32,7 @@ export function AdminProfile({ adminProfile, token, onProfileUpdate }) {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/admins/change-password",
+        "https://sunum-website-backend.onrender.com/api/admins/change-password",
         {
           method: "PUT",
           headers: {

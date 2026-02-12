@@ -17,9 +17,7 @@ export function Incoming() {
 
   const fetchUpcomingSeminars = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/seminars?isUpcoming=true",
-      );
+      const response = await fetch(`${API_ENDPOINTS.seminars}?isUpcoming=true`);
       const data = await response.json();
       setEducators(data);
     } catch (error) {

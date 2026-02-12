@@ -13,9 +13,7 @@ export function Popular() {
 
   const fetchPopularSeminars = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/seminars?isPopular=true",
-      );
+      const response = await fetch(`${API_ENDPOINTS.seminars}?isPopular=true`);
       const data = await response.json();
       setPopularSeminars(data);
     } catch (error) {

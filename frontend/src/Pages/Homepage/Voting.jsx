@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { API_ENDPOINTS } from "../../config/api";
 
 export function Voting() {
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -12,7 +13,7 @@ export function Voting() {
 
   const fetchTopics = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/voting");
+      const response = await fetch(API_ENDPOINTS.voting);
       const data = await response.json();
       setTopics(data);
     } catch (error) {
@@ -25,12 +26,9 @@ export function Voting() {
   const handleVote = async () => {
     if (selectedTopic !== null) {
       try {
-        await fetch(
-          `http://localhost:5000/api/voting/${topics[selectedTopic].id}/vote`,
-          {
-            method: "POST",
-          },
-        );
+        await fetch(API_ENDPOINTS.votingVote(topics[selectedTopic].id), {
+          method: "POST",
+        });
         setHasVoted(true);
       } catch (error) {
         console.error("Oy gönderilemedi:", error);

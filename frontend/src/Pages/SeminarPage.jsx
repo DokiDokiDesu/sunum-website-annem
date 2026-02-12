@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { API_ENDPOINTS } from "./config/api";
 import { Header } from "../Components/Header";
 import dayjs from "dayjs";
 import "dayjs/locale/tr";
@@ -18,7 +19,7 @@ export function SeminarPage() {
   const fetchSeminar = async () => {
     try {
       console.log("Fetching seminar with ID:", id);
-      const response = await fetch(`http://localhost:5000/api/seminars/${id}`);
+      const response = await fetch(API_ENDPOINTS.seminarById(id));
       console.log("Response status:", response.status);
       const data = await response.json();
       console.log("Seminar data:", data);

@@ -6,8 +6,11 @@ import { AdminManagement } from "./AdminManagement";
 import { ActivityLogs } from "./ActivityLogs";
 import { AdminProfile } from "./AdminProfile";
 import { VotingManagement } from "./VotingManagement";
+import API_BASE_URL from "../../config/api";
 
 dayjs.locale("tr");
+
+// Admin Dashboard uses direct API_BASE_URL for flexibility
 
 export function AdminDashboard() {
   const [seminars, setSeminars] = useState([]);
@@ -86,7 +89,7 @@ export function AdminDashboard() {
   const fetchAdminProfile = async () => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await fetch("http://localhost:5000/api/auth/profile", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -101,7 +104,7 @@ export function AdminDashboard() {
 
   const fetchSeminars = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/seminars");
+      const response = await fetch(`${API_BASE_URL}/api/seminars`);
       const data = await response.json();
       setSeminars(data);
     } catch (err) {
@@ -113,7 +116,7 @@ export function AdminDashboard() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/categories");
+      const response = await fetch(`${API_BASE_URL}/api/categories`);
       const data = await response.json();
       setCategories(data);
     } catch (err) {
@@ -160,8 +163,8 @@ export function AdminDashboard() {
 
     try {
       const url = editingSeminar
-        ? `http://localhost:5000/api/seminars/${editingSeminar.id}`
-        : "http://localhost:5000/api/seminars";
+        ? `${API_BASE_URL}/api/seminars/${editingSeminar.id}`
+        : `${API_BASE_URL}/api/seminars`;
 
       const response = await fetch(url, {
         method: editingSeminar ? "PUT" : "POST",
@@ -233,7 +236,7 @@ export function AdminDashboard() {
       formDataToSend.append("isUpcoming", true);
 
       const response = await fetch(
-        `http://localhost:5000/api/seminars/${editingSeminar.id}`,
+        `${API_BASE_URL}/api/seminars/${editingSeminar.id}`,
         {
           method: "PUT",
           headers: {
@@ -258,7 +261,7 @@ export function AdminDashboard() {
 
     const token = localStorage.getItem("adminToken");
     try {
-      const response = await fetch(`http://localhost:5000/api/seminars/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/seminars/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -284,7 +287,7 @@ export function AdminDashboard() {
     const token = localStorage.getItem("adminToken");
     try {
       const response = await fetch(
-        `http://localhost:5000/api/seminars/${id}/cancel-schedule`,
+        `${API_BASE_URL}/api/seminars/${id}/cancel-schedule`,
         {
           method: "POST",
           headers: {
@@ -344,8 +347,8 @@ export function AdminDashboard() {
 
     try {
       const url = editingCategory
-        ? `http://localhost:5000/api/categories/${editingCategory.id}`
-        : "http://localhost:5000/api/categories";
+        ? `${API_BASE_URL}/api/categories/${editingCategory.id}`
+        : `${API_BASE_URL}/api/categories`;
 
       const response = await fetch(url, {
         method: editingCategory ? "PUT" : "POST",
@@ -383,15 +386,12 @@ export function AdminDashboard() {
 
     const token = localStorage.getItem("adminToken");
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/categories/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       if (!response.ok) throw new Error("Silme başarısız");
 
@@ -405,7 +405,7 @@ export function AdminDashboard() {
     const token = localStorage.getItem("adminToken");
     try {
       const response = await fetch(
-        `http://localhost:5000/api/categories/${id}/toggle`,
+        `${API_BASE_URL}/api/categories/${id}/toggle`,
         {
           method: "PATCH",
           headers: {
@@ -1267,7 +1267,7 @@ Kültürel Bellek ve Hafıza"
                           try {
                             const token = localStorage.getItem("adminToken");
                             const response = await fetch(
-                              `http://localhost:5000/api/seminars/${seminar.id}`,
+                              `${API_BASE_URL}/api/seminars/${seminar.id}`,
                               {
                                 method: "PUT",
                                 headers: {
