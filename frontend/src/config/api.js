@@ -1,6 +1,13 @@
-// API Configuration - Updated for production deployment
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://sunum-website-backend.onrender.com";
+// API Configuration - Production deployment
+const PRODUCTION_API_URL = "https://sunum-website-backend.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_URL || PRODUCTION_API_URL;
+
+// Debug log - remove after verification
+console.log("🔧 API Configuration:", {
+  VITE_API_URL: import.meta.env.VITE_API_URL,
+  API_BASE_URL: API_BASE_URL,
+  mode: import.meta.env.MODE
+});
 
 export const API_ENDPOINTS = {
   // Auth
