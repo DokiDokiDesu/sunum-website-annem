@@ -87,8 +87,13 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log("✅ Veritabanı bağlantısı başarılı");
 
-    // SQLite ile alter: true sorun yaratıyor, bu yüzden sadece sync kullanıyoruz
-    await sequelize.sync();
+    // Model senkronizasyonu - PostgreSQL için doğru sırada
+    // Foreign key bağımlılıklarını göz önünde bulundurarak sıralı sync
+    await Admin.sync();
+    await Category.sync();
+    await Seminar.sync();
+    await VotingTopic.sync();
+    await ActivityLog.sync(); // En son, çünkü Admin'e referans veriyor
     console.log("✅ Veritabanı senkronizasyonu tamamlandı");
 
     // Varsayılan admin oluştur (eğer yoksa)
