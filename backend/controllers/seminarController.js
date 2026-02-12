@@ -1,4 +1,5 @@
 import Seminar from "../models/Seminar.js";
+import ActivityLog from "../models/ActivityLog.js";
 import { Op } from "sequelize";
 import fs from "fs";
 import path from "path";
@@ -25,6 +26,8 @@ export const checkAndUpdateExpiredSeminars = async () => {
 
     // Her seminerin tarihini kontrol et
     let expiredCount = 0;
+    const expiredDetails = [];
+
     for (const seminar of expiredSeminars) {
       if (seminar.date) {
         const seminarDate = new Date(seminar.date);
@@ -37,13 +40,43 @@ export const checkAndUpdateExpiredSeminars = async () => {
             isUpcoming: false,
             // Tarih bilgilerini koruyoruz, sadece durumu değiştiriyoruz
           });
+
           expiredCount++;
+          expiredDetails.push({
+            id: seminar.id,
+            title: seminar.title,
+            date: seminar.date,
+          });
+
           console.log(
             `Seminer tarihi geçti, planlanmamış hale getirildi: ${seminar.title}`,
           );
+
+          // Aktivite logu kaydet
+          try {
+            await ActivityLog.create({
+              adminId: 0, // Sistem otomatik işlemi
+              adminUsername: "System",
+              action: "cancel_schedule",
+              resourceType: "seminar",
+              resourceId: seminar.id,
+              description: `Otomatik sistem: Geçmiş tarihli seminer planlamadan kaldırıldı - "${seminar.title}" (Tarih: ${seminar.date})`,
+              ipAddress: "127.0.0.1",
+              userAgent: "System-AutoScheduleCheck",
+              metadata: {
+                reason: "expired_date",
+                seminarDate: seminar.date,
+                checkDate: today.toISOString(),
+                automatic: true,
+              },
+            });
+          } catch (logError) {
+            console.error("Log kaydı oluşturulamadı:", logError);
+          }
         }
       }
     }
+
     return expiredCount;
   } catch (error) {
     console.error("Geçmiş seminer kontrolü sırasında hata:", error);

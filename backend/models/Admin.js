@@ -24,6 +24,23 @@ const Admin = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    role: {
+      type: DataTypes.ENUM("superadmin", "admin"),
+      allowNull: false,
+      defaultValue: "admin",
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    fullName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    lastLogin: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

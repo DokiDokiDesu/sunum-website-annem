@@ -8,9 +8,12 @@ import sequelize from "./config/database.js";
 import authRoutes from "./routes/authRoutes.js";
 import seminarRoutes from "./routes/seminarRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import logRoutes from "./routes/logRoutes.js";
 import Admin from "./models/Admin.js";
 import Seminar from "./models/Seminar.js";
 import Category from "./models/Category.js";
+import ActivityLog from "./models/ActivityLog.js";
 import { checkAndUpdateExpiredSeminars } from "./controllers/seminarController.js";
 import fs from "fs";
 import { Op } from "sequelize";
@@ -39,6 +42,8 @@ app.use("/uploads", express.static(uploadsDir));
 app.use("/api/auth", authRoutes);
 app.use("/api/seminars", seminarRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/admins", adminRoutes);
+app.use("/api/logs", logRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

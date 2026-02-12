@@ -1,4 +1,5 @@
 import Admin from "../models/Admin.js";
+import ActivityLog from "../models/ActivityLog.js";
 import jwt from "jsonwebtoken";
 
 // Admin kayıt
@@ -58,6 +59,28 @@ export const loginAdmin = async (req, res) => {
         .json({ message: "Kullanıcı adı veya şifre hatalı" });
     }
 
+    // Aktif mi kontrol
+    if (!admin.isActive) {
+      return res
+        .status(403)
+        .json({ message: "Hesabınız devre dışı bırakılmış" });
+    }
+
+    // Son giriş tarihini güncelle
+    await admin.update({ lastLogin: new Date() });
+
+    // Login log kaydı
+    await ActivityLog.create({
+      adminId: admin.id,
+      adminUsername: admin.username,
+      action: "login",
+      resourceType: "admin",
+      resourceId: admin.id,
+      description: "Kullanıcı giriş yaptı",
+      ipAddress: req.ip,
+      userAgent: req.get("User-Agent"),
+    });
+
     const token = jwt.sign({ id: admin.id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -69,6 +92,10 @@ export const loginAdmin = async (req, res) => {
         id: admin.id,
         username: admin.username,
         email: admin.email,
+        fullName: admin.fullName,
+        role: admin.role,
+        isActive: admin.isActive,
+        lastLogin: admin.lastLogin,
       },
     });
   } catch (error) {
@@ -80,7 +107,16 @@ export const loginAdmin = async (req, res) => {
 export const getAdminProfile = async (req, res) => {
   try {
     const admin = await Admin.findByPk(req.adminId, {
-      attributes: ["id", "username", "email", "createdAt"],
+      attributes: [
+        "id",
+        "username",
+        "email",
+        "fullName",
+        "role",
+        "isActive",
+        "lastLogin",
+        "createdAt",
+      ],
     });
 
     if (!admin) {

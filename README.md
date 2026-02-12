@@ -16,15 +16,21 @@ Bu proje, seminer etkinliklerini yönetmek için geliştirilmiş full-stack bir 
 ```bash
 cd backend
 npm install
-npm start
+
+# İlk kurulumda migration çalıştırın
+npm run migrate
+
+# Sunucuyu başlatın
+npm run dev
 ```
 
 Backend `http://localhost:5000` adresinde çalışacaktır.
 
-**Varsayılan Admin Hesabı:**
+**İlk Superadmin Hesabı:**
 
-- Kullanıcı Adı: `admin`
+- Kullanıcı Adı: `superadmin`
 - Şifre: `admin123`
+- **ÖNEMLİ:** İlk girişte şifrenizi değiştirin!
 
 ### 2. Frontend'i Çalıştırın
 
@@ -42,18 +48,67 @@ Frontend `http://localhost:5173` adresinde çalışacaktır.
 
 Admin paneline erişmek için:
 
-- URL: `http://localhost:5173/#/admin/login`
-- Varsayılan giriş bilgileri ile giriş yapın
+- URL: `http://localhost:5173/admin/login`
+- İlk girişte superadmin bilgileri ile giriş yapın
+- Profil sekmesinden şifrenizi değiştirin
+
+### Admin Sistemi Özellikleri
+
+#### Super Admin Yetenekleri:
+
+✅ Seminer içerik yönetimi (oluştur, düzenle, sil)
+✅ Kategori yönetimi
+✅ **Yeni admin hesapları oluşturma**
+✅ **Admin hesaplarını düzenleme/silme**
+✅ **Admin şifrelerini sıfırlama**
+✅ **Aktivite loglarını görüntüleme**
+✅ Kendi şifresini değiştirme
+
+#### Normal Admin Yetenekleri:
+
+✅ Seminer içerik yönetimi
+✅ Kategori yönetimi
+✅ Kendi şifresini değiştirme
 
 ### Admin Panel Özellikleri
+
+#### 📝 Seminer Yönetimi
 
 ✅ Yeni seminer ekleme
 ✅ Seminerleri düzenleme
 ✅ Seminerleri silme
 ✅ Resim yükleme
-✅ Kategori yönetimi
 ✅ Popüler seminer işaretleme
 ✅ Yaklaşan seminer işaretleme
+✅ Seminer planlama (tarih, saat, eğitmen)
+
+#### 📊 Kategori Yönetimi
+
+✅ Dinamik kategori oluşturma
+✅ Kategori düzenleme ve silme
+✅ Header menüsünde gösterme/gizleme
+✅ Sıralama ve vurgulama
+
+#### 👥 Admin Yönetimi (Sadece Superadmin)
+
+✅ Yeni admin hesapları oluşturma
+✅ Admin bilgilerini düzenleme
+✅ Admin hesaplarını aktif/pasif yapma
+✅ Admin şifrelerini sıfırlama
+✅ Rol yönetimi (Admin / Super Admin)
+
+#### 📋 Aktivite Logları (Sadece Superadmin)
+
+✅ Tüm admin işlemlerini görüntüleme
+✅ Filtreleme (Eylem, Kaynak türü)
+✅ İstatistikler ve raporlar
+✅ IP adresi ve zaman damgası takibi
+
+#### 👤 Profil Yönetimi
+
+✅ Kendi bilgilerini görüntüleme
+✅ Şifre değiştirme
+✅ Son giriş bilgisi
 
 ## Özellikler
 
@@ -65,14 +120,18 @@ Admin paneline erişmek için:
 - 📱 Mobil uyumlu
 - 🎯 Seminer detay sayfaları
 - 🗳️ Oylama sistemi
+- 🔐 Rol tabanlı erişim kontrolü
 
 ### Backend
 
 - 🔐 JWT tabanlı authentication
+- 👤 Rol sistemi (Super Admin / Admin)
 - 📦 SQLite veritabanı (PostgreSQL'e geçiş için hazır)
 - 🖼️ Resim yükleme ve yönetimi
 - 🔒 Güvenli admin API'leri
 - ✅ Veri doğrulama
+- 📋 Otomatik aktivite loglama
+- 🔄 Veritabanı migration sistemi
 
 ## Teknolojiler
 

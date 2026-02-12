@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import "dayjs/locale/tr";
+import { AdminManagement } from "./AdminManagement";
+import { ActivityLogs } from "./ActivityLogs";
+import { AdminProfile } from "./AdminProfile";
 
 dayjs.locale("tr");
 
@@ -11,8 +14,12 @@ export function AdminDashboard() {
   const [showForm, setShowForm] = useState(false);
   const [editingSeminar, setEditingSeminar] = useState(null);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState("content"); // 'content', 'schedule', 'popular', 'categories'
+  const [activeTab, setActiveTab] = useState("content"); // 'content', 'schedule', 'popular', 'categories', 'admins', 'logs', 'profile'
   const navigate = useNavigate();
+
+  // Admin profil ve yetki
+  const [adminProfile, setAdminProfile] = useState(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   // Category states
   const [categories, setCategories] = useState([]);
@@ -52,9 +59,44 @@ export function AdminDashboard() {
       navigate("/admin/login");
       return;
     }
+    fetchAdminProfile();
     fetchSeminars();
     fetchCategories();
   }, [navigate]);
+
+  // Sekme kapatıldığında otomatik çıkış yap (güvenlik)
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      // Sayfa yenilenmesi ile sekme kapatma arasında ayrım yapabilmek için
+      // beforeunload event'ini kullanıyoruz
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+    };
+
+    // Sayfa kapatıldığında veya başka bir sayfaya gidildiğinde çalışır
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Component unmount olduğunda (örn: logout) event listener'ı temizle
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  const fetchAdminProfile = async () => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await fetch("http://localhost:5000/api/auth/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setAdminProfile(data);
+      setIsSuperAdmin(data.role === "superadmin");
+    } catch (err) {
+      console.error("İdari profil yüklenemedi:", err);
+    }
+  };
 
   const fetchSeminars = async () => {
     try {
@@ -392,7 +434,15 @@ export function AdminDashboard() {
       {/* Header */}
       <div className="bg-gray-900 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-white text-2xl font-bold">Admin Paneli</h1>
+          <div>
+            <h1 className="text-white text-2xl font-bold">Admin Paneli</h1>
+            {adminProfile && (
+              <p className="text-gray-400 text-sm mt-1">
+                Hoş geldin, {adminProfile.fullName || adminProfile.username} (
+                {adminProfile.role === "superadmin" ? "Super Admin" : "Admin"})
+              </p>
+            )}
+          </div>
           <div className="flex gap-4">
             <button
               onClick={() => navigate("/")}
@@ -418,7 +468,7 @@ export function AdminDashboard() {
         )}
 
         {/* Tab Navigation */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex gap-4 mb-6 flex-wrap">
           <button
             onClick={() => {
               setActiveTab("content");
@@ -471,6 +521,49 @@ export function AdminDashboard() {
             }`}
           >
             📊 Kategoriler
+          </button>
+          {isSuperAdmin && (
+            <>
+              <button
+                onClick={() => {
+                  setActiveTab("admins");
+                  setShowForm(false);
+                }}
+                className={`px-6 py-3 rounded-lg font-semibold transition ${
+                  activeTab === "admins"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                }`}
+              >
+                👥 Admin Yönetimi
+              </button>
+              <button
+                onClick={() => {
+                  setActiveTab("logs");
+                  setShowForm(false);
+                }}
+                className={`px-6 py-3 rounded-lg font-semibold transition ${
+                  activeTab === "logs"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                }`}
+              >
+                📋 Aktivite Logları
+              </button>
+            </>
+          )}
+          <button
+            onClick={() => {
+              setActiveTab("profile");
+              setShowForm(false);
+            }}
+            className={`px-6 py-3 rounded-lg font-semibold transition ${
+              activeTab === "profile"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+            }`}
+          >
+            👤 Profil
           </button>
         </div>
 
@@ -1412,6 +1505,25 @@ Kültürel Bellek ve Hafıza"
               )}
             </div>
           </div>
+        )}
+
+        {/* Admin Management Tab */}
+        {activeTab === "admins" && isSuperAdmin && (
+          <AdminManagement token={localStorage.getItem("adminToken")} />
+        )}
+
+        {/* Activity Logs Tab */}
+        {activeTab === "logs" && isSuperAdmin && (
+          <ActivityLogs token={localStorage.getItem("adminToken")} />
+        )}
+
+        {/* Profile Tab */}
+        {activeTab === "profile" && (
+          <AdminProfile
+            adminProfile={adminProfile}
+            token={localStorage.getItem("adminToken")}
+            onProfileUpdate={fetchAdminProfile}
+          />
         )}
       </div>
     </div>
