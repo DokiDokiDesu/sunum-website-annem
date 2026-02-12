@@ -12,7 +12,7 @@ export function Voting() {
 
   const fetchTopics = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/seminars");
+      const response = await fetch("http://localhost:5000/api/voting");
       const data = await response.json();
       setTopics(data);
     } catch (error) {
@@ -26,7 +26,7 @@ export function Voting() {
     if (selectedTopic !== null) {
       try {
         await fetch(
-          `http://localhost:5000/api/seminars/${topics[selectedTopic].id}/vote`,
+          `http://localhost:5000/api/voting/${topics[selectedTopic].id}/vote`,
           {
             method: "POST",
           },
@@ -56,7 +56,15 @@ export function Voting() {
           </div>
         )}
 
-        {!hasVoted ? (
+        {!loading && topics.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-400">
+              Şu anda aktif oylama konusu bulunmuyor.
+            </p>
+          </div>
+        )}
+
+        {!loading && topics.length > 0 && !hasVoted ? (
           <>
             {/* Voting Grid */}
             <div className="grid grid-cols-1 gap-3 mb-6">
@@ -109,7 +117,9 @@ export function Voting() {
               </button>
             </div>
           </>
-        ) : (
+        ) : null}
+
+        {!loading && topics.length > 0 && hasVoted ? (
           // Success Message
           <div className="text-center py-16">
             <div className="inline-block p-6 bg-green-500/20 rounded-full mb-6">
@@ -125,7 +135,7 @@ export function Voting() {
               Geri bildiriminiz için teşekkür ederiz.
             </p>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

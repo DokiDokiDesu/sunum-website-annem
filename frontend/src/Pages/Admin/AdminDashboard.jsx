@@ -5,6 +5,7 @@ import "dayjs/locale/tr";
 import { AdminManagement } from "./AdminManagement";
 import { ActivityLogs } from "./ActivityLogs";
 import { AdminProfile } from "./AdminProfile";
+import { VotingManagement } from "./VotingManagement";
 
 dayjs.locale("tr");
 
@@ -14,7 +15,7 @@ export function AdminDashboard() {
   const [showForm, setShowForm] = useState(false);
   const [editingSeminar, setEditingSeminar] = useState(null);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState("content"); // 'content', 'schedule', 'popular', 'categories', 'admins', 'logs', 'profile'
+  const [activeTab, setActiveTab] = useState("content"); // 'content', 'schedule', 'popular', 'categories', 'voting', 'admins', 'logs', 'profile'
   const navigate = useNavigate();
 
   // Admin profil ve yetki
@@ -521,6 +522,19 @@ export function AdminDashboard() {
             }`}
           >
             📊 Kategoriler
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("voting");
+              setShowForm(false);
+            }}
+            className={`px-6 py-3 rounded-lg font-semibold transition ${
+              activeTab === "voting"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+            }`}
+          >
+            🗳️ Oylama Yönetimi
           </button>
           {isSuperAdmin && (
             <>
@@ -1506,6 +1520,9 @@ Kültürel Bellek ve Hafıza"
             </div>
           </div>
         )}
+
+        {/* Voting Management Tab */}
+        {activeTab === "voting" && <VotingManagement />}
 
         {/* Admin Management Tab */}
         {activeTab === "admins" && isSuperAdmin && (

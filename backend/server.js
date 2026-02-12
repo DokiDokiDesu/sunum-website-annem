@@ -10,10 +10,12 @@ import seminarRoutes from "./routes/seminarRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import logRoutes from "./routes/logRoutes.js";
+import votingRoutes from "./routes/votingRoutes.js";
 import Admin from "./models/Admin.js";
 import Seminar from "./models/Seminar.js";
 import Category from "./models/Category.js";
 import ActivityLog from "./models/ActivityLog.js";
+import VotingTopic from "./models/VotingTopic.js";
 import { checkAndUpdateExpiredSeminars } from "./controllers/seminarController.js";
 import fs from "fs";
 import { Op } from "sequelize";
@@ -44,6 +46,7 @@ app.use("/api/seminars", seminarRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/admins", adminRoutes);
 app.use("/api/logs", logRoutes);
+app.use("/api/voting", votingRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

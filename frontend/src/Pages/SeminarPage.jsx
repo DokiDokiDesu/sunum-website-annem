@@ -115,7 +115,7 @@ export function SeminarPage() {
                   {seminar.duration && (
                     <>
                       <div>
-                        <span>tahmini seminer süresi : {seminar.duration}</span>
+                        <span>tahmini süre : {seminar.duration}</span>
                       </div>
                       <span>•</span>
                     </>
@@ -149,23 +149,55 @@ export function SeminarPage() {
                 )}
 
                 {/* Alt Kutu */}
-                {seminar.price && (
+                {seminar.isScheduled ? (
+                  // Seminer planlanmışsa - Fiyat ve Rezervasyon göster
+                  seminar.price && (
+                    <div className="flex justify-center lg:justify-end absolute bottom-0 right-5">
+                      <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md">
+                        <div className="text-center space-y-6">
+                          {/* Fiyat */}
+                          <div>
+                            <p className="text-white text-4xl font-bold mb-2">
+                              {seminar.price} ₺
+                            </p>
+                          </div>
+
+                          {/* Butonlar */}
+                          <div className="space-y-3">
+                            <button className="w-full border-2 border-white text-white font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center gap-2">
+                              <span className="text-xl">Rezervasyon Yap</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                ) : (
+                  // Seminer planlanmamışsa - Bilgilendirme mesajı göster
                   <div className="flex justify-center lg:justify-end absolute bottom-0 right-5">
                     <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md">
-                      <div className="text-center space-y-6">
-                        {/* Fiyat */}
-                        <div>
-                          <p className="text-white text-4xl font-bold mb-2">
-                            {seminar.price} ₺
-                          </p>
+                      <div className="text-center space-y-4">
+                        <div className="text-gray-400">
+                          <svg
+                            className="w-16 h-16 mx-auto mb-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
                         </div>
-
-                        {/* Butonlar */}
-                        <div className="space-y-3">
-                          <button className="w-full border-2 border-white text-white font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center gap-2">
-                            <span className="text-xl">Rezervasyon Yap</span>
-                          </button>
-                        </div>
+                        <p className="text-white text-lg font-semibold">
+                          Yakın zamanda bu seminer için bir planlama yoktur
+                        </p>
+                        <p className="text-gray-400 text-sm">
+                          Bu seminerin yeni tarihleri için takipte kalın
+                        </p>
                       </div>
                     </div>
                   </div>
