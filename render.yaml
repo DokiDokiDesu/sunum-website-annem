@@ -26,11 +26,8 @@ services:
           property: connectionString
 
   # Frontend Static Site
-  - type: web
+  - type: static
     name: sunum-website-frontend
-    env: static
-    region: frankfurt
-    plan: free
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: ./frontend/dist
     envVars:
