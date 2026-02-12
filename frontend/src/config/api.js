@@ -1,6 +1,6 @@
 // API Configuration - Production deployment
 const PRODUCTION_API_URL = "https://sunum-website-backend.onrender.com";
-const API_BASE_URL = import.meta.env.VITE_API_URL || PRODUCTION_API_URL;
+export const API_BASE_URL = import.meta.env.VITE_API_URL || PRODUCTION_API_URL;
 
 // Debug log - remove after verification
 console.log("API Configuration DEBUG:", {
@@ -40,5 +40,3 @@ export const API_ENDPOINTS = {
   // Health check
   health: `${API_BASE_URL}/api/health`,
 };
-
-export default API_BASE_URL;
