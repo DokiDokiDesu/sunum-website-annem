@@ -11,6 +11,9 @@ import { Contact } from "./Pages/Contact";
 import { AdminLogin } from "./Pages/Admin/AdminLogin";
 import { AdminDashboard } from "./Pages/Admin/AdminDashboard";
 
+// Build version to force cache invalidation
+const BUILD_VERSION = "1.0.1";
+
 function App() {
   return (
     <Router>
