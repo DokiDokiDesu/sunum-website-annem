@@ -10,9 +10,14 @@ import { AllSeminar } from "./Pages/AllSeminar";
 import { Contact } from "./Pages/Contact";
 import { AdminLogin } from "./Pages/Admin/AdminLogin";
 import { AdminDashboard } from "./Pages/Admin/AdminDashboard";
+import API_BASE_URL from "./config/api";
 
 // Build version to force cache invalidation
-const BUILD_VERSION = "1.0.1";
+const BUILD_VERSION = "1.0.2";
+console.log("==========================================");
+console.log("APP LOADED - BUILD VERSION:", BUILD_VERSION);
+console.log("API BASE URL:", API_BASE_URL);
+console.log("==========================================");
 
 function App() {
   return (
