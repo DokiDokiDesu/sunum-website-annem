@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { API_ENDPOINTS } from "../config/api";
 import { Header } from "../Components/Header";
@@ -11,10 +11,38 @@ export function SeminarPage() {
   const { id } = useParams();
   const [seminar, setSeminar] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
+  const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+  const [showAboutButton, setShowAboutButton] = useState(false);
+  const [showSummaryButton, setShowSummaryButton] = useState(false);
+
+  const aboutRef = useRef(null);
+  const summaryRef = useRef(null);
 
   useEffect(() => {
     fetchSeminar();
   }, [id]);
+
+  useEffect(() => {
+    // İçerik yüklendikten sonra overflow kontrolü yap
+    const checkOverflow = () => {
+      if (aboutRef.current) {
+        // 240px (max-h-60 = 15rem = 240px)
+        const maxHeight = 240;
+        setShowAboutButton(aboutRef.current.scrollHeight > maxHeight);
+      }
+      if (summaryRef.current) {
+        // 272px (max-h-68 = 17rem = 272px)
+        const maxHeight = 272;
+        setShowSummaryButton(summaryRef.current.scrollHeight > maxHeight);
+      }
+    };
+
+    // Biraz gecikme ekle, içerik render olduktan sonra kontrol et
+    if (seminar) {
+      setTimeout(checkOverflow, 100);
+    }
+  }, [seminar]);
 
   const fetchSeminar = async () => {
     try {
@@ -173,7 +201,7 @@ export function SeminarPage() {
                   )
                 ) : (
                   // Seminer planlanmamışsa - Bilgilendirme mesajı göster
-                  <div className="flex justify-center lg:justify-end absolute bottom-0 right-5">
+                  <div className="flex justify-center w-90 lg:justify-end absolute bottom-0 right-5">
                     <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md">
                       <div className="text-center space-y-4">
                         <div className="text-gray-400">
@@ -192,7 +220,7 @@ export function SeminarPage() {
                           </svg>
                         </div>
                         <p className="text-white text-lg font-semibold">
-                          Yakın zamanda bu seminer için bir planlama yoktur
+                          Yakın zamanda bu seminer için bir planlama yok
                         </p>
                         <p className="text-gray-400 text-sm">
                           Bu seminerin yeni tarihleri için takipte kalın
@@ -210,7 +238,7 @@ export function SeminarPage() {
       {/* Features Section */}
       <div className="bg-black py-16">
         <div className="max-w-7xl mx-auto px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="flex flex-wrap justify-center gap-8 md:gap-60">
             {/* Eğitmenle Canlı Soru-Cevap */}
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center">
@@ -236,7 +264,7 @@ export function SeminarPage() {
             </div>
 
             {/* Eğitmen İmzalı Sertifika */}
-            <div className="flex flex-col items-center text-center space-y-4">
+            {/*<div className="flex flex-col items-center text-center space-y-4">
               <div className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center">
                 <svg
                   className="w-12 h-12 text-white"
@@ -263,7 +291,7 @@ export function SeminarPage() {
                 <br />
                 SERTİFİKA
               </h3>
-            </div>
+            </div> */}
 
             {/* Ekstra İçerikler */}
             <div className="flex flex-col items-center text-center space-y-4">
@@ -295,67 +323,28 @@ export function SeminarPage() {
           <h2 className="bg-[rgb(36,36,36)] text-2xl py-3 pl-5 font-bold">
             SEMİNER HAKKINDA
           </h2>
-          <p className="pt-12 px-10 text-lg text-gray-300 font-light">
-            {seminar.detailedDescription || seminar.description}
-          </p>
-          <button className="flex items-center gap-2 text-white text-sm pt-4 justify-self-end mr-5 mb-5">
-            <span>Daha fazla oku</span>
-
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div
+            ref={aboutRef}
+            className={`transition-all duration-300 overflow-hidden ${
+              isAboutExpanded ? "max-h-[2000px]" : "max-h-60"
+            }`}
+          >
+            <p className="pt-12 px-10 pb-6 text-lg text-gray-300 font-light break-words whitespace-normal">
+              {seminar.detailedDescription || seminar.description}
+            </p>
+          </div>
+          {showAboutButton && (
+            <button
+              onClick={() => setIsAboutExpanded(!isAboutExpanded)}
+              className="flex items-center gap-2 text-white text-sm pt-4 ml-auto mr-5 mb-5 hover:text-red-500 transition-colors"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-        </div>
-        {/*seminer özeti */}
-        <div className="w-96 border border-[rgb(36,36,36)] rounded-3xl ml-10 h-max mt-10 overflow-hidden">
-          <h2 className="bg-[rgb(36,36,36)] text-2xl py-3 pl-5 font-bold">
-            SEMİNER ÖZETİ
-          </h2>
-          <div className="p-5 space-y-3">
-            {/* Liste öğeleri */}
-            {topics.length > 0 ? (
-              topics.map((topic, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 text-gray-300"
-                >
-                  <div className="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </div>
-                  <span className="text-gray-300 text-lg">{topic}</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400 text-sm">Henüz konu eklenmemiş</p>
-            )}
-
-            {/* Daha fazla oku butonu */}
-            <button className="flex items-center gap-2 text-white text-sm pt-4 justify-self-end">
-              <span>Daha fazla oku</span>
+              <span>
+                {isAboutExpanded ? "Daha az göster" : "Daha fazla oku"}
+              </span>
               <svg
-                className="w-4 h-4"
+                className={`w-4 h-4 transition-transform duration-300 ${
+                  isAboutExpanded ? "rotate-180" : ""
+                }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -368,6 +357,78 @@ export function SeminarPage() {
                 />
               </svg>
             </button>
+          )}
+        </div>
+        {/*seminer özeti */}
+        <div className="w-96 border border-[rgb(36,36,36)] rounded-3xl ml-10 h-max mt-10 overflow-hidden">
+          <h2 className="bg-[rgb(36,36,36)] text-2xl py-3 pl-5 font-bold">
+            SEMİNER ÖZETİ
+          </h2>
+          <div className="p-5">
+            <div
+              ref={summaryRef}
+              className={`transition-all duration-300 overflow-hidden space-y-3 ${
+                isSummaryExpanded ? "max-h-[2000px]" : "max-h-68"
+              }`}
+            >
+              {/* Liste öğeleri */}
+              {topics.length > 0 ? (
+                topics.map((topic, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start gap-3 text-gray-300"
+                  >
+                    <div className="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center flex-shrink-0 mt-1">
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-lg break-words flex-1">
+                      {topic}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400 text-sm">Henüz konu eklenmemiş</p>
+              )}
+            </div>
+
+            {/* Daha fazla oku butonu */}
+            {showSummaryButton && (
+              <button
+                onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}
+                className="flex items-center gap-2 text-white text-sm pt-4 hover:text-red-500 transition-colors"
+              >
+                <span>
+                  {isSummaryExpanded ? "Daha az göster" : "Daha fazla oku"}
+                </span>
+                <svg
+                  className={`w-4 h-4 transition-transform duration-300 ${
+                    isSummaryExpanded ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
       </div>
