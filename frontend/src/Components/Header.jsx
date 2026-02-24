@@ -84,8 +84,8 @@ export function Header() {
     >
       <img
         onClick={() => navigate("/")}
-        className="h-10 mt-3 ml-5 w-50 cursor-pointer"
-        src="header-logo.png"
+        className="cursor-pointer h-12 ml-4 mt-1 mr-2"
+        src="logo-header.png"
       ></img>
       <div ref={menuRef} className="relative">
         <button
@@ -136,16 +136,22 @@ export function Header() {
       </div>
       {/*Header linkleri */}
       <div className="flex ml-20 text-[rgb(243,243,243)]">
-        <p className=" hover:text-gray-400 transition-all duration-500">
+        <p
+          onClick={() => navigate("/")}
+          className="hover:text-gray-400 transition-all duration-500 cursor-pointer"
+        >
           Ana Sayfa
         </p>
         <p
           onClick={() => navigate("/all-seminar")}
-          className="ml-15 hover:text-gray-400 transition-all duration-500"
+          className="ml-15 hover:text-gray-400 transition-all duration-500 cursor-pointer"
         >
           Tüm Seminerler
         </p>
-        <p className="ml-15 hover:text-gray-400 transition-all duration-500">
+        <p
+          onClick={() => navigate("/about")}
+          className="ml-15 hover:text-gray-400 transition-all duration-500 cursor-pointer"
+        >
           Hakkımızda
         </p>
         <p
