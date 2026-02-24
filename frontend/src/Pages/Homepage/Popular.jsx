@@ -35,7 +35,7 @@ export function Popular() {
   };
 
   return (
-    <div className="py-10 px-8 w-full overflow-hidden">
+    <div className="py-10 px-4 md:px-8 w-full overflow-hidden">
       <h2 className="text-3xl font-bold text-white mb-6">En Çok Sevilenler</h2>
 
       {loading && (
@@ -64,13 +64,13 @@ export function Popular() {
         {/* Scroll Container */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-8 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth"
+          className="flex gap-4 md:gap-8 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {popularSeminars.map((seminar, index) => (
             <div
               key={index}
-              className="relative flex-shrink-0 w-[420px] h-72 rounded-lg cursor-pointer group"
+              className="relative flex-shrink-0 w-[280px] md:w-[350px] lg:w-[420px] h-72 rounded-lg cursor-pointer group"
               onClick={() => navigate(`/seminar/${seminar.id}`)}
             >
               {/* Rank Number */}
@@ -88,7 +88,7 @@ export function Popular() {
               </div>
 
               {/* Content Card */}
-              <div className="absolute top-1/2 left-12 -translate-y-1/2 w-80 h-60 rounded-xl overflow-hidden shadow-2xl z-10">
+              <div className="absolute top-1/2 left-8 md:left-12 -translate-y-1/2 w-56 md:w-72 lg:w-80 h-60 rounded-xl overflow-hidden shadow-2xl z-10">
                 {/* Background Image */}
                 <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"

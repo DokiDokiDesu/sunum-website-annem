@@ -166,10 +166,10 @@ export function SeminarPage() {
               </div>
 
               {/* Sağ taraf - Fiyat Kutuları */}
-              <div className="lg:col-span-5 flex flex-col justify-between h-full py-8">
+              <div className="lg:col-span-5 flex flex-col justify-between h-full py-8 relative">
                 {/* Üst Kutu */}
                 {seminar.dayOfWeek && (
-                  <div className="flex flex-col justify-center items-center absolute top-16 right-5 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 w-50">
+                  <div className="flex flex-col justify-center items-center lg:absolute lg:top-16 lg:right-5 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 px-4 py-2 mb-4 lg:mb-0">
                     <p>{formattedDay}</p>
                     {seminar.startTime && <p>{seminar.startTime}</p>}
                   </div>
@@ -179,7 +179,7 @@ export function SeminarPage() {
                 {seminar.isScheduled ? (
                   // Seminer planlanmışsa - Fiyat ve Rezervasyon göster
                   seminar.price && (
-                    <div className="flex justify-center lg:justify-end absolute bottom-0 right-5">
+                    <div className="flex justify-center lg:justify-end lg:absolute lg:bottom-0 lg:right-5 w-full">
                       <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md">
                         <div className="text-center space-y-6">
                           {/* Fiyat */}
@@ -201,7 +201,7 @@ export function SeminarPage() {
                   )
                 ) : (
                   // Seminer planlanmamışsa - Bilgilendirme mesajı göster
-                  <div className="flex justify-center w-90 lg:justify-end absolute bottom-0 right-5">
+                  <div className="flex justify-center lg:justify-end lg:absolute lg:bottom-0 lg:right-5 w-full">
                     <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md">
                       <div className="text-center space-y-4">
                         <div className="text-gray-400">
@@ -317,9 +317,9 @@ export function SeminarPage() {
       </div>
 
       {/*mid section */}
-      <div className="h-150 mt-5 flex justify-center">
+      <div className="mt-5 flex justify-center">
         {/*seminer hakkında */}
-        <div className="w-180 border border-[rgb(36,36,36)] ml-5 h-max mt-10 rounded-3xl overflow-hidden">
+        <div className="w-full max-w-2xl border border-[rgb(36,36,36)] ml-0 md:ml-5 h-max mt-10 rounded-3xl overflow-hidden">
           <h2 className="bg-[rgb(36,36,36)] text-2xl py-3 pl-5 font-bold">
             SEMİNER HAKKINDA
           </h2>
@@ -360,7 +360,7 @@ export function SeminarPage() {
           )}
         </div>
         {/*seminer özeti */}
-        <div className="w-96 border border-[rgb(36,36,36)] rounded-3xl ml-10 h-max mt-10 overflow-hidden">
+        <div className="w-full max-w-md border border-[rgb(36,36,36)] rounded-3xl ml-0 md:ml-10 h-max mt-10 overflow-hidden">
           <h2 className="bg-[rgb(36,36,36)] text-2xl py-3 pl-5 font-bold">
             SEMİNER ÖZETİ
           </h2>

@@ -4,7 +4,11 @@ import { API_ENDPOINTS } from "../config/api";
 
 export function Header() {
   const [openDiscoverMenu, setOpenDiscoverMenu] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   const menuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+  const hamburgerRef = useRef(null);
   const searchRef = useRef(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showSearchInput, setShowSearchInput] = useState(false);
@@ -64,6 +68,30 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSearchInput]);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const handleClickOutside = (e) => {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(e.target) &&
+        hamburgerRef.current &&
+        !hamburgerRef.current.contains(e.target)
+      ) {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [mobileMenuOpen]);
+
+  // Mobil menü kapandığında kategoriler dropdown'unu da kapat
+  useEffect(() => {
+    if (!mobileMenuOpen) {
+      setMobileCategoriesOpen(false);
+    }
+  }, [mobileMenuOpen]);
+
   //scroll listener
 
   useEffect(() => {
@@ -80,21 +108,55 @@ export function Header() {
 
   return (
     <div
-      className={`flex h-16 w-full fixed z-50 top-0 left-0 transition-all duration-300 items-center ${getBackgroundColor()}`}
+      className={`flex h-16 w-full max-w-full fixed z-50 top-0 left-0 right-0 transition-all duration-300 items-center px-0 ${getBackgroundColor()}`}
     >
+      {/* Mobile Hamburger Button */}
+      <button
+        ref={hamburgerRef}
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className="md:hidden ml-3 mr-2 text-white p-2"
+      >
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          {mobileMenuOpen ? (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          ) : (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          )}
+        </svg>
+      </button>
+
+      {/* Logo */}
       <img
         onClick={() => navigate("/")}
-        className="cursor-pointer h-12 ml-4 mt-1 mr-2"
+        className="cursor-pointer h-12 ml-12 md:ml-4 mt-1 mr-2 flex-shrink-0"
         src="logo-header.png"
-      ></img>
-      <div ref={menuRef} className="relative">
+        alt="Logo"
+      />
+
+      {/* Desktop Menu - Keşfet Butonu */}
+      <div ref={menuRef} className="relative hidden md:block">
         <button
-          className="h-10 w-26 ml-5 border border-white rounded"
+          className="h-10 px-4 ml-3 md:ml-5 border border-white rounded whitespace-nowrap"
           onClick={() => setOpenDiscoverMenu(!openDiscoverMenu)}
         >
           Keşfet
           <span
-            className={`transition ${openDiscoverMenu ? "rotate-180" : ""}`}
+            className={`ml-1 transition ${openDiscoverMenu ? "rotate-180" : ""}`}
           >
             ▼
           </span>
@@ -103,10 +165,10 @@ export function Header() {
 
         {openDiscoverMenu && (
           <div
-            className="absolute left-0 mt-2 w-[520px] rounded-lg bg-neutral-900 p-6 shadow-xl 
+            className="absolute left-0 mt-2 w-auto min-w-[300px] max-w-[520px] rounded-lg bg-neutral-900 p-6 shadow-xl 
                           animate-in fade-in slide-in-from-top-2 duration-400 z-10"
           >
-            <div className="grid grid-cols-2 gap-y-3 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
               {categories.map((item) => (
                 <button
                   key={item.id}
@@ -134,8 +196,9 @@ export function Header() {
           </div>
         )}
       </div>
-      {/*Header linkleri */}
-      <div className="flex ml-20 text-[rgb(243,243,243)]">
+
+      {/* Desktop Navigation Links */}
+      <div className="hidden md:flex md:ml-8 lg:ml-20 text-[rgb(243,243,243)] whitespace-nowrap">
         <p
           onClick={() => navigate("/")}
           className="hover:text-gray-400 transition-all duration-500 cursor-pointer"
@@ -144,41 +207,145 @@ export function Header() {
         </p>
         <p
           onClick={() => navigate("/all-seminar")}
-          className="ml-15 hover:text-gray-400 transition-all duration-500 cursor-pointer"
+          className="ml-6 lg:ml-12 hover:text-gray-400 transition-all duration-500 cursor-pointer"
         >
           Tüm Seminerler
         </p>
         <p
           onClick={() => navigate("/about")}
-          className="ml-15 hover:text-gray-400 transition-all duration-500 cursor-pointer"
+          className="ml-6 lg:ml-12 hover:text-gray-400 transition-all duration-500 cursor-pointer"
         >
           Hakkımızda
         </p>
         <p
           onClick={() => navigate("/contact")}
-          className="ml-15 hover:text-gray-400 transition-all duration-500 cursor-pointer"
+          className="ml-6 lg:ml-12 hover:text-gray-400 transition-all duration-500 cursor-pointer"
         >
           İletişim
         </p>
       </div>
-      {/* header linkleri- sağ*/}
-      <div className="flex ml-auto items-center gap-3 mr-10 ">
+
+      {/* Right Side Icons - Desktop */}
+      <div className="hidden md:flex ml-auto items-center gap-3 mr-4 md:mr-6 lg:mr-10">
         <input
           ref={searchRef}
           placeholder="ara"
           className={`search-input border rounded ${showSearchInput ? "show" : ""}`}
-        ></input>
+        />
 
         <img
           onClick={() => setShowSearchInput(!showSearchInput)}
           src="icons8-search-30.png"
-          className="cursor-pointer"
-        ></img>
+          className="cursor-pointer w-6 h-6"
+          alt="Search"
+        />
         <img
           src="icons8-notification-48.png"
-          className="cursor-pointer h-8"
-        ></img>
+          className="cursor-pointer w-6 h-6"
+          alt="Notifications"
+        />
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div
+          ref={mobileMenuRef}
+          className="md:hidden fixed top-16 left-0 right-0 w-full max-w-full bg-neutral-900 shadow-xl z-40 animate-in slide-in-from-top duration-300 overflow-x-hidden"
+        >
+          <div className="flex flex-col px-4 py-6 space-y-4 w-full max-w-full overflow-x-hidden">
+            {/* Mobile Navigation Links */}
+            <button
+              onClick={() => {
+                navigate("/");
+                setMobileMenuOpen(false);
+              }}
+              className="text-left text-white hover:text-red-500 transition-colors py-2"
+            >
+              Ana Sayfa
+            </button>
+            <button
+              onClick={() => {
+                navigate("/all-seminar");
+                setMobileMenuOpen(false);
+              }}
+              className="text-left text-white hover:text-red-500 transition-colors py-2"
+            >
+              Tüm Seminerler
+            </button>
+            <button
+              onClick={() => {
+                navigate("/about");
+                setMobileMenuOpen(false);
+              }}
+              className="text-left text-white hover:text-red-500 transition-colors py-2"
+            >
+              Hakkımızda
+            </button>
+            <button
+              onClick={() => {
+                navigate("/contact");
+                setMobileMenuOpen(false);
+              }}
+              className="text-left text-white hover:text-red-500 transition-colors py-2"
+            >
+              İletişim
+            </button>
+
+            {/* Divider */}
+            <div className="border-t border-neutral-700 my-2"></div>
+
+            {/* Categories Dropdown */}
+            <button
+              onClick={() => setMobileCategoriesOpen(!mobileCategoriesOpen)}
+              className="flex items-center justify-between text-white hover:text-red-500 transition-colors py-2"
+            >
+              <span>Kategoriler</span>
+              <span
+                className={`transition-transform duration-200 ${mobileCategoriesOpen ? "rotate-180" : ""}`}
+              >
+                ▼
+              </span>
+            </button>
+
+            {mobileCategoriesOpen && (
+              <div className="grid grid-cols-2 gap-3 text-sm pl-4 animate-in slide-in-from-top duration-200">
+                {categories.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      navigate(`/all-seminar?category=${item.slug}`);
+                      setMobileMenuOpen(false);
+                      setMobileCategoriesOpen(false);
+                    }}
+                    className={`text-left transition hover:text-white py-1 ${
+                      item.highlight
+                        ? "text-red-500 font-semibold"
+                        : "text-neutral-300"
+                    }`}
+                  >
+                    {item.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Mobile Icons */}
+            <div className="flex items-center gap-4 pt-4 border-t border-neutral-700">
+              <button
+                onClick={() => setShowSearchInput(!showSearchInput)}
+                className="flex items-center gap-2 text-white hover:text-red-500"
+              >
+                <img
+                  src="icons8-search-30.png"
+                  className="w-6 h-6"
+                  alt="Search"
+                />
+                <span>Ara</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

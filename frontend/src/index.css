@@ -26,7 +26,13 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+html {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
 }
 
 h1 {

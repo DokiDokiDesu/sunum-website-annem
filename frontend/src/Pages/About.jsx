@@ -4,9 +4,9 @@ export function About() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-black text-white overflow-x-hidden">
         {/* Hero Section */}
-        <div className="pt-32 pb-20 px-8 max-w-6xl mx-auto bg-gradient-to-b from-black via-[rgb(20,20,20)] to-black">
+        <div className="pt-32 pb-20 px-4 md:px-8 max-w-6xl mx-auto bg-gradient-to-b from-black via-[rgb(20,20,20)] to-black">
           <h1
             className="text-5xl md:text-6xl font-bold mb-8 text-center"
             style={{ fontStyle: "italic" }}
@@ -25,9 +25,8 @@ export function About() {
           {/* Vision Section */}
           <div className="space-y-8 mb-20">
             {/* İlham Card - Sola yaslanmış */}
-            <div className="max-w-4xl mr-auto relative">
-              <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 to-transparent"></div>
-              <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 p-10 rounded-lg border border-neutral-700 hover:border-red-500/70 transition-all duration-500 hover:shadow-2xl hover:shadow-red-500/20">
+            <div className="max-w-full md:max-w-4xl mr-auto">
+              <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 p-6 md:p-10 rounded-lg border border-neutral-700 hover:border-red-500/70 transition-all duration-500 hover:shadow-2xl hover:shadow-red-500/20">
                 <div className="flex items-center mb-6">
                   <h2
                     className="text-3xl font-bold text-red-500"
@@ -48,9 +47,8 @@ export function About() {
             </div>
 
             {/* Platform Card - Sağa kayık */}
-            <div className="max-w-4xl ml-auto relative">
-              <div className="absolute -right-4 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 to-transparent"></div>
-              <div className="bg-gradient-to-bl from-neutral-900 to-neutral-800 p-10 rounded-lg border border-neutral-700 hover:border-red-500/70 transition-all duration-500 hover:shadow-2xl hover:shadow-red-500/20">
+            <div className="max-w-full md:max-w-4xl ml-auto">
+              <div className="bg-gradient-to-bl from-neutral-900 to-neutral-800 p-6 md:p-10 rounded-lg border border-neutral-700 hover:border-red-500/70 transition-all duration-500 hover:shadow-2xl hover:shadow-red-500/20">
                 <div className="flex items-center justify-end mb-6">
                   <h2
                     className="text-3xl font-bold text-red-500 mr-4"
