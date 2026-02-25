@@ -207,9 +207,14 @@ export function SeminarPage() {
                 seminar.price && (
                   <div className="bg-black/40 backdrop-blur-sm rounded-xl p-6 border border-white/20 flex items-center justify-center">
                     <div className="flex items-center justify-center mb-4">
-                      <p className="text-white text-3xl font-bold mt-4 mr-3 ">
-                        {seminar.price} ₺
+                      <p className="text-white text-3xl font-bold mt-4 mr-3 whitespace-nowrap">
+                        {new Intl.NumberFormat("tr-TR", {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 2,
+                        }).format(Number(seminar.price))}
+                        ₺
                       </p>
+                      {/*   <p className="text-white text-3xl font-bold mt-4">₺</p>*/}
                     </div>
                     <button className="w-40 ml-5 bg-black border border-white text-white font-bold py-3  rounded-lg hover:bg-red-700 transition-all duration-300">
                       Rezervasyon Yap
@@ -325,8 +330,8 @@ export function SeminarPage() {
                             <div className="text-center space-y-6">
                               {/* Fiyat */}
                               <div>
-                                <p className="text-white text-4xl font-bold mb-2">
-                                  {seminar.price} ₺
+                                <p className="text-white text-4xl font-bold mb-2 whitespace-nowrap">
+                                  {seminar.price}₺
                                 </p>
                               </div>
 

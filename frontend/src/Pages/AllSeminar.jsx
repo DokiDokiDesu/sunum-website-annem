@@ -11,6 +11,7 @@ export function AllSeminar() {
   const [seminars, setSeminars] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     fetchSeminars();
@@ -45,6 +46,21 @@ export function AllSeminar() {
     }
   };
 
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setIsDropdownOpen(false);
+  };
+
+  const getCategoryLabel = () => {
+    if (selectedCategory === "all") return "Tüm Eğitimler";
+    if (selectedCategory === "upcoming") return "Yaklaşan Seminerler";
+    if (selectedCategory === "popular") return "En Çok Sevilenler";
+    if (selectedCategory === "new") return "Yeni Eklenenler";
+
+    const category = categories.find((cat) => cat.slug === selectedCategory);
+    return category ? category.name : "Tüm Eğitimler";
+  };
+
   const filteredSeminars = seminars.filter((seminar) => {
     const matchesSearch = seminar.title
       .toLowerCase()
@@ -77,7 +93,7 @@ export function AllSeminar() {
 
       <div className="max-w-7xl mx-auto px-4 py-12 mt-10 ">
         {/* Başlık */}
-        <h1 className="text-white text-4xl  mb-8 font-light">Tüm Seminerler</h1>
+        <h1 className="text-white text-4xl mb-8 font-light">Tüm Eğitimler</h1>
 
         {loading && (
           <div className="text-center py-12">
@@ -86,7 +102,7 @@ export function AllSeminar() {
         )}
 
         {/* Arama Kutusu */}
-        <div className="mb-12">
+        <div className="mb-6">
           <div className="relative w-full">
             <input
               type="text"
@@ -109,9 +125,105 @@ export function AllSeminar() {
           </div>
         </div>
 
+        {/* Mobil Dropdown - Sadece mobilde göster */}
+        <div className="lg:hidden mb-6">
+          <div className="relative">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-full bg-[#1a1a1a] text-white px-6 py-4 rounded-lg border border-gray-700 flex items-center justify-between"
+            >
+              <span>{getCategoryLabel()}</span>
+              <svg
+                className={`w-5 h-5 transition-transform ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {/* Dropdown Menu */}
+            {isDropdownOpen && (
+              <div className="absolute z-10 w-full mt-2 bg-[#1a1a1a] border border-gray-700 rounded-lg overflow-hidden">
+                <div className="max-h-96 overflow-y-auto">
+                  {/* Sabit Kategoriler */}
+                  <button
+                    onClick={() => handleCategorySelect("all")}
+                    className={`block w-full text-left py-3 px-6 transition-colors ${
+                      selectedCategory === "all"
+                        ? "bg-red-600 text-white font-semibold"
+                        : "text-white hover:bg-gray-800"
+                    }`}
+                  >
+                    Tüm Eğitimler
+                  </button>
+                  <button
+                    onClick={() => handleCategorySelect("upcoming")}
+                    className={`block w-full text-left py-3 px-6 transition-colors ${
+                      selectedCategory === "upcoming"
+                        ? "bg-red-600 text-white font-semibold"
+                        : "text-white hover:bg-gray-800"
+                    }`}
+                  >
+                    Yaklaşan Seminerler
+                  </button>
+                  <button
+                    onClick={() => handleCategorySelect("popular")}
+                    className={`block w-full text-left py-3 px-6 transition-colors ${
+                      selectedCategory === "popular"
+                        ? "bg-red-600 text-white font-semibold"
+                        : "text-white hover:bg-gray-800"
+                    }`}
+                  >
+                    En Çok Sevilenler
+                  </button>
+                  <button
+                    onClick={() => handleCategorySelect("new")}
+                    className={`block w-full text-left py-3 px-6 transition-colors ${
+                      selectedCategory === "new"
+                        ? "bg-red-600 text-white font-semibold"
+                        : "text-white hover:bg-gray-800"
+                    }`}
+                  >
+                    Yeni Eklenenler
+                  </button>
+
+                  {/* Ayırıcı */}
+                  {categories.length > 0 && (
+                    <div className="border-t border-gray-700 my-2"></div>
+                  )}
+
+                  {/* Dinamik Kategoriler */}
+                  {categories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => handleCategorySelect(category.slug)}
+                      className={`block w-full text-left py-3 px-6 transition-colors ${
+                        selectedCategory === category.slug
+                          ? "bg-red-600 text-white font-semibold"
+                          : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="flex gap-8">
-          {/* Sol Menü - Kategoriler */}
-          <div className="w-64 flex-shrink-0">
+          {/* Sol Menü - Sadece Desktop'ta göster */}
+          <div className="hidden lg:block w-64 flex-shrink-0">
             <div className="space-y-2">
               {/* Sabit Durum Filtreleri */}
               <button
@@ -177,24 +289,24 @@ export function AllSeminar() {
             </div>
           </div>
 
-          {/* Seminer Grid */}
+          {/* Seminer Grid - Mobilde 2, Desktop'ta 3 sütun */}
           <div className="flex-1">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {filteredSeminars.map((seminar) => (
                 <div
                   key={seminar.id}
                   className="group cursor-pointer"
                   onClick={() => navigate(`/seminar/${seminar.id}`)}
                 >
-                  <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-4">
+                  <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-3">
                     <img
                       src={seminar.image || "/ornek-kart.jpg"}
                       alt={seminar.title}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                      <p className="text-2xl text-white font-light">
+                    <div className="absolute bottom-0 left-0 right-0 p-3 md:p-6 text-white">
+                      <p className="text-sm md:text-2xl text-white font-light line-clamp-2">
                         {seminar.title}
                       </p>
                     </div>
