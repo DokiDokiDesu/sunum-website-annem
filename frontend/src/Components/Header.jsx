@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from "../config/api";
 
 export function Header() {
   const [openDiscoverMenu, setOpenDiscoverMenu] = useState(false);
+  const [isMenuAnimating, setIsMenuAnimating] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   const menuRef = useRef(null);
@@ -41,6 +42,17 @@ export function Header() {
         return isScrolled ? "bg-black" : "bg-transparent";
       default:
         return isScrolled ? "bg-black" : "bg-[rgb(38,38,38)]";
+    }
+  };
+  const handleMenuToggle = () => {
+    if (openDiscoverMenu) {
+      setIsMenuAnimating(true);
+      setTimeout(() => {
+        setOpenDiscoverMenu(false);
+        setIsMenuAnimating(false);
+      }, 200);
+    } else {
+      setOpenDiscoverMenu(true);
     }
   };
 
@@ -151,22 +163,29 @@ export function Header() {
       {/* Desktop Menu - Keşfet Butonu */}
       <div ref={menuRef} className="relative hidden md:block">
         <button
-          className="h-10 px-4 ml-3 md:ml-5 border border-white rounded whitespace-nowrap"
-          onClick={() => setOpenDiscoverMenu(!openDiscoverMenu)}
+          className="h-10 px-4 ml-3 md:ml-5 border-1 border-gray-400 rounded whitespace-nowrap flex items-center gap-2"
+          onClick={handleMenuToggle}
         >
           Keşfet
-          <span
-            className={`ml-1 transition ${openDiscoverMenu ? "rotate-180" : ""}`}
+          <svg
+            className={`w-4 h-4 transition-transform duration-200 ${openDiscoverMenu ? "rotate-180" : ""}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            ▼
-          </span>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
         </button>
-        {/*Keşfet menu */}
 
-        {openDiscoverMenu && (
+        {(openDiscoverMenu || isMenuAnimating) && (
           <div
-            className="absolute left-0 mt-2 w-auto min-w-[300px] max-w-[520px] rounded-lg bg-neutral-900 p-6 shadow-xl 
-                          animate-in fade-in slide-in-from-top-2 duration-400 z-10"
+            className={`absolute left-0 mt-2 w-auto min-w-[300px] max-w-[520px] rounded-lg bg-neutral-900 p-6 shadow-xl z-10 
+                        ${openDiscoverMenu && !isMenuAnimating ? "menu-enter" : "menu-exit"}`}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
               {categories.map((item) => (
@@ -174,7 +193,7 @@ export function Header() {
                   key={item.id}
                   onClick={() => {
                     navigate(`/all-seminar?category=${item.slug}`);
-                    setOpenDiscoverMenu(false);
+                    handleMenuToggle();
                   }}
                   className={`text-left transition hover:text-white ${
                     item.highlight
@@ -188,7 +207,10 @@ export function Header() {
             </div>
 
             <button
-              onClick={() => navigate("/all-seminar")}
+              onClick={() => {
+                navigate("/all-seminar");
+                handleMenuToggle();
+              }}
               className="mt-4 w-full rounded-md bg-red-500 py-2 text-white hover:bg-red-600"
             >
               Tüm Seminerler

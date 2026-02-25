@@ -166,10 +166,10 @@ export function SeminarPage() {
               </div>
 
               {/* Sağ taraf - Fiyat Kutuları */}
-              <div className="lg:col-span-5 flex flex-col justify-between h-full py-8 relative">
+              <div className="lg:col-span-5 relative h-full min-h-[600px]">
                 {/* Üst Kutu */}
                 {seminar.dayOfWeek && (
-                  <div className="flex flex-col justify-center items-center lg:absolute lg:top-16 lg:right-5 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 px-4 py-2 mb-4 lg:mb-0">
+                  <div className="flex flex-col justify-center items-center lg:absolute lg:top-12 lg:right-15 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 px-4 py-2 mb-4 lg:mb-0">
                     <p>{formattedDay}</p>
                     {seminar.startTime && <p>{seminar.startTime}</p>}
                   </div>
@@ -179,8 +179,8 @@ export function SeminarPage() {
                 {seminar.isScheduled ? (
                   // Seminer planlanmışsa - Fiyat ve Rezervasyon göster
                   seminar.price && (
-                    <div className="flex justify-center lg:justify-end lg:absolute lg:bottom-0 lg:right-5 w-full">
-                      <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md">
+                    <div className="flex justify-center lg:justify-end lg:absolute lg:bottom-0 lg:right-0 w-full lg:w-auto">
+                      <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md lg:max-w-sm">
                         <div className="text-center space-y-6">
                           {/* Fiyat */}
                           <div>
@@ -201,8 +201,8 @@ export function SeminarPage() {
                   )
                 ) : (
                   // Seminer planlanmamışsa - Bilgilendirme mesajı göster
-                  <div className="flex justify-center lg:justify-end lg:absolute lg:bottom-0 lg:right-5 w-full">
-                    <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md">
+                  <div className="flex justify-center lg:justify-end lg:absolute lg:bottom-0 lg:right-0 w-full lg:w-auto">
+                    <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md lg:max-w-sm">
                       <div className="text-center space-y-4">
                         <div className="text-gray-400">
                           <svg
