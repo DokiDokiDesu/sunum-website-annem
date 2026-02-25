@@ -100,135 +100,280 @@ export function SeminarPage() {
     <>
       <Header />
       {/* Hero Section */}
-      <div className="relative w-full h-screen overflow-hidden">
-        {/* Arkaplan Resmi */}
+      <div className="relative w-full overflow-hidden">
+        {/* Desktop Arkaplan Resmi - sadece desktop'ta göster */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="hidden lg:block absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: `url(${seminar.image || "/ornek-kart.jpg"})`,
           }}
         >
-          {/* Koyu overlay - soldan sağa gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40"></div>
-          {/* Alta doğru yumuşak siyah geçiş */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black"></div>
+          {/* Koyu overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black"></div>
         </div>
 
-        {/* İçerik Wrapper */}
-        <div className="relative h-full flex items-center">
-          <div className="w-full max-w-7xl mx-auto px-8 py-12">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              {/* Sol taraf - İçerik */}
-              <div className="lg:col-span-7 text-white space-y-6">
-                {/* Kategori Badge */}
-                <span className="inline-block bg-red-600 text-white px-4 py-1.5 rounded text-sm font-semibold capitalize">
+        {/* İçerik Wrapper - Mobil ve Desktop */}
+        <div className="relative">
+          {/* Mobil Görünüm (< lg) */}
+          <div className="lg:hidden bg-black">
+            {/* Mobil için resim üstte */}
+            <div className="w-full h-64 relative overflow-hidden">
+              <img
+                src={seminar.image || "/ornek-kart.jpg"}
+                alt={seminar.title}
+                className="w-full h-full object-cover"
+              />
+              {/* Gradient overlay - altta kararmaya başlar */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60"></div>
+
+              {/* Resmin üzerine kategori badge */}
+              <div className="absolute top-4 left-4">
+                <span className="inline-block bg-red-600 text-white px-3 py-1 rounded text-xs font-semibold capitalize">
                   {seminar.category}
                 </span>
+              </div>
+            </div>
 
-                {/* Başlık */}
+            {/* İçerik - resmin altında */}
+            <div className="px-4 pt-6 pb-8 space-y-6 max-w-full overflow-hidden">
+              {/* Başlık */}
+              <h1
+                className="text-3xl font-bold text-white leading-tight"
+                style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
+              >
+                {seminar.title}
+              </h1>
 
-                {/* Alt Başlık */}
-                <h1 className="text-5xl lg:text-6xl font-bold italic leading-tight">
-                  {seminar.title}
-                </h1>
+              {/* Bilgi Satırı - Kategori ve Süre */}
+              <div className="flex items-center gap-2 flex-wrap text-gray-300 text-xs">
+                <span className="capitalize">{seminar.category}</span>
+                {seminar.duration && (
+                  <>
+                    <span>•</span>
+                    <span>{seminar.duration}</span>
+                  </>
+                )}
+              </div>
 
-                {/* Bilgi Satırı */}
-                <div className="flex items-center gap-4 text-sm text-gray-300">
-                  <span className="bg-gray-700/50 px-3 py-1 rounded capitalize">
-                    {seminar.category}
-                  </span>
-                  <span>•</span>
+              {/* Açıklama */}
+              <p
+                className="text-gray-300 text-sm leading-relaxed"
+                style={{
+                  wordBreak: "break-word",
+                  overflowWrap: "break-word",
+                  maxWidth: "100%",
+                }}
+              >
+                {seminar.description}
+              </p>
 
+              {/* Bilgi Kutuları - Mobilde yan yana 3 kutu */}
+              {seminar.isScheduled && (
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Tahmini Süre */}
                   {seminar.duration && (
-                    <>
-                      <div>
-                        <span>tahmini süre : {seminar.duration}</span>
-                      </div>
-                      <span>•</span>
-                    </>
+                    <div className="bg-gray-900/50 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                      <p className="text-gray-400 text-xs mb-1">Süre</p>
+                      <p className="text-white text-sm font-semibold">
+                        {seminar.duration}
+                      </p>
+                    </div>
                   )}
+
+                  {/* Tarih */}
                   {seminar.date && (
-                    <div>
-                      <span>{formattedDate}</span>
-                      {seminar.startTime && (
-                        <span className="ml-5">
-                          başlangıç : {seminar.startTime}
-                        </span>
-                      )}
+                    <div className="bg-gray-900/50 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                      <p className="text-gray-400 text-xs mb-1">Tarih</p>
+                      <p className="text-white text-sm font-semibold">
+                        {dayjs(seminar.date).format("DD MMM")}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Başlangıç Saati */}
+                  {seminar.startTime && (
+                    <div className="bg-gray-900/50 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                      <p className="text-gray-400 text-xs mb-1">Saat</p>
+                      <p className="text-white text-sm font-semibold">
+                        {seminar.startTime}
+                      </p>
                     </div>
                   )}
                 </div>
+              )}
 
-                {/* Açıklama */}
-                <p className="text-gray-200 text-lg leading-relaxed max-w-2xl">
-                  {seminar.description}
-                </p>
-              </div>
-
-              {/* Sağ taraf - Fiyat Kutuları */}
-              <div className="lg:col-span-5 relative h-full min-h-[600px]">
-                {/* Üst Kutu */}
-                {seminar.dayOfWeek && (
-                  <div className="flex flex-col justify-center items-center lg:absolute lg:top-12 lg:right-15 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 px-4 py-2 mb-4 lg:mb-0">
-                    <p>{formattedDay}</p>
-                    {seminar.startTime && <p>{seminar.startTime}</p>}
+              {/* Fiyat ve Rezervasyon */}
+              {seminar.isScheduled ? (
+                seminar.price && (
+                  <div className="bg-black/40 backdrop-blur-sm rounded-xl p-6 border border-white/20 flex items-center justify-center">
+                    <div className="flex items-center justify-center mb-4">
+                      <p className="text-white text-3xl font-bold mt-4 mr-3 ">
+                        {seminar.price} ₺
+                      </p>
+                    </div>
+                    <button className="w-40 ml-5 bg-black border border-white text-white font-bold py-3  rounded-lg hover:bg-red-700 transition-all duration-300">
+                      Rezervasyon Yap
+                    </button>
                   </div>
-                )}
+                )
+              ) : (
+                <div className="bg-black/40 backdrop-blur-sm rounded-xl p-6 border border-white/10 text-center">
+                  <div className="text-gray-400 mb-3">
+                    <svg
+                      className="w-12 h-12 mx-auto"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-white text-base font-semibold mb-2">
+                    Yakın zamanda planlama yok
+                  </p>
+                  <p className="text-gray-400 text-xs">
+                    Yeni tarihleri için takipte kalın
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
 
-                {/* Alt Kutu */}
-                {seminar.isScheduled ? (
-                  // Seminer planlanmışsa - Fiyat ve Rezervasyon göster
-                  seminar.price && (
-                    <div className="flex justify-center lg:justify-end lg:absolute lg:bottom-0 lg:right-0 w-full lg:w-auto">
-                      <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md lg:max-w-sm">
-                        <div className="text-center space-y-6">
-                          {/* Fiyat */}
+          {/* Desktop Görünüm (>= lg) */}
+          <div className="hidden lg:block min-h-screen">
+            <div className="h-full flex items-center">
+              <div className="w-full max-w-7xl mx-auto px-8 py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                  {/* Sol taraf - İçerik */}
+                  <div className="lg:col-span-7 text-white space-y-6 max-w-full overflow-hidden">
+                    {/* Kategori Badge */}
+                    <span className="inline-block bg-red-600 text-white px-4 py-1.5 rounded text-sm font-semibold capitalize">
+                      {seminar.category}
+                    </span>
+
+                    {/* Başlık */}
+                    <h1
+                      className="text-5xl lg:text-6xl font-bold italic leading-tight"
+                      style={{
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                      }}
+                    >
+                      {seminar.title}
+                    </h1>
+
+                    {/* Bilgi Satırı */}
+                    <div className="flex items-center gap-4 text-sm text-gray-300 flex-wrap">
+                      <span className="bg-gray-700/50 px-3 py-1 rounded capitalize">
+                        {seminar.category}
+                      </span>
+                      <span>•</span>
+
+                      {seminar.duration && (
+                        <>
                           <div>
-                            <p className="text-white text-4xl font-bold mb-2">
-                              {seminar.price} ₺
+                            <span>tahmini süre : {seminar.duration}</span>
+                          </div>
+                          <span>•</span>
+                        </>
+                      )}
+                      {seminar.date && (
+                        <div>
+                          <span>{formattedDate}</span>
+                          {seminar.startTime && (
+                            <span className="ml-5">
+                              başlangıç : {seminar.startTime}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Açıklama */}
+                    <p
+                      className="text-gray-200 text-lg leading-relaxed max-w-2xl"
+                      style={{
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                      }}
+                    >
+                      {seminar.description}
+                    </p>
+                  </div>
+
+                  {/* Sağ taraf - Fiyat Kutuları */}
+                  <div className="lg:col-span-5 relative h-full min-h-[600px]">
+                    {/* Üst Kutu */}
+                    {seminar.dayOfWeek && (
+                      <div className="flex flex-col justify-center items-center lg:absolute lg:top-5 lg:right-10 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 px-4 py-4 mb-4 font-bold text-2xl  lg:mb-0">
+                        <p>{formattedDay}</p>
+                        {seminar.startTime && <p>{seminar.startTime}</p>}
+                      </div>
+                    )}
+
+                    {/* Alt Kutu */}
+                    {seminar.isScheduled ? (
+                      // Seminer planlanmışsa - Fiyat ve Rezervasyon göster
+                      seminar.price && (
+                        <div className="flex justify-center lg:justify-end lg:absolute lg:bottom-0 lg:right-0 w-full lg:w-auto">
+                          <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/10 w-full max-w-md lg:max-w-sm">
+                            <div className="text-center space-y-6">
+                              {/* Fiyat */}
+                              <div>
+                                <p className="text-white text-4xl font-bold mb-2">
+                                  {seminar.price} ₺
+                                </p>
+                              </div>
+
+                              {/* Butonlar */}
+                              <div className="space-y-3">
+                                <button className="w-full border-1 border-white text-white font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center gap-2">
+                                  <span className="text-xl mx-2">
+                                    Rezervasyon Yap
+                                  </span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    ) : (
+                      // Seminer planlanmamışsa - Bilgilendirme mesajı göster
+                      <div className="flex justify-center lg:justify-end lg:absolute lg:bottom-0 lg:right-0 w-full lg:w-auto">
+                        <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md lg:max-w-sm">
+                          <div className="text-center space-y-4">
+                            <div className="text-gray-400">
+                              <svg
+                                className="w-16 h-16 mx-auto mb-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
+                              </svg>
+                            </div>
+                            <p className="text-white text-lg font-semibold">
+                              Yakın zamanda bu seminer için bir planlama yok
+                            </p>
+                            <p className="text-gray-400 text-sm">
+                              Bu seminerin yeni tarihleri için takipte kalın
                             </p>
                           </div>
-
-                          {/* Butonlar */}
-                          <div className="space-y-3">
-                            <button className="w-full border-2 border-white text-white font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center gap-2">
-                              <span className="text-xl">Rezervasyon Yap</span>
-                            </button>
-                          </div>
                         </div>
                       </div>
-                    </div>
-                  )
-                ) : (
-                  // Seminer planlanmamışsa - Bilgilendirme mesajı göster
-                  <div className="flex justify-center lg:justify-end lg:absolute lg:bottom-0 lg:right-0 w-full lg:w-auto">
-                    <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/10 w-full max-w-md lg:max-w-sm">
-                      <div className="text-center space-y-4">
-                        <div className="text-gray-400">
-                          <svg
-                            className="w-16 h-16 mx-auto mb-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
-                        </div>
-                        <p className="text-white text-lg font-semibold">
-                          Yakın zamanda bu seminer için bir planlama yok
-                        </p>
-                        <p className="text-gray-400 text-sm">
-                          Bu seminerin yeni tarihleri için takipte kalın
-                        </p>
-                      </div>
-                    </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
@@ -236,14 +381,14 @@ export function SeminarPage() {
       </div>
 
       {/* Features Section */}
-      <div className="bg-black py-16">
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="flex flex-wrap justify-center gap-8 md:gap-60">
+      <div className="bg-black py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row justify-center gap-8 md:gap-60">
             {/* Eğitmenle Canlı Soru-Cevap */}
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center">
+            <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-white flex items-center justify-center">
                 <svg
-                  className="w-12 h-12 text-white"
+                  className="w-10 h-10 md:w-12 md:h-12 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -256,48 +401,18 @@ export function SeminarPage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-white text-xl font-bold">
+              <h3 className="text-white text-lg md:text-xl font-bold">
                 EĞİTMENLE CANLI
                 <br />
                 SORU - CEVAP
               </h3>
             </div>
 
-            {/* Eğitmen İmzalı Sertifika */}
-            {/*<div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center">
-                <svg
-                  className="w-12 h-12 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5h2m0 0h2m-2 0v2m0-2V3"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-white text-xl font-bold">
-                EĞİTMEN İMZALI
-                <br />
-                SERTİFİKA
-              </h3>
-            </div> */}
-
             {/* Ekstra İçerikler */}
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center">
+            <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-white flex items-center justify-center">
                 <svg
-                  className="w-12 h-12 text-white"
+                  className="w-10 h-10 md:w-12 md:h-12 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -310,17 +425,19 @@ export function SeminarPage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-white text-xl font-bold">EKSTRA İÇERİKLER</h3>
+              <h3 className="text-white text-lg md:text-xl font-bold">
+                EKSTRA İÇERİKLER
+              </h3>
             </div>
           </div>
         </div>
       </div>
 
       {/*mid section */}
-      <div className="mt-5 flex justify-center">
+      <div className="mt-5 flex flex-col lg:flex-row justify-center items-start px-4 md:px-8 gap-6 lg:gap-0">
         {/*seminer hakkında */}
-        <div className="w-full max-w-2xl border border-[rgb(36,36,36)] ml-0 md:ml-5 h-max mt-10 rounded-3xl overflow-hidden">
-          <h2 className="bg-[rgb(36,36,36)] text-2xl py-3 pl-5 font-bold">
+        <div className="w-full lg:max-w-2xl border border-[rgb(36,36,36)] lg:ml-5 h-max mt-0 lg:mt-10 rounded-3xl overflow-hidden">
+          <h2 className="bg-[rgb(36,36,36)] text-xl md:text-2xl py-3 pl-4 md:pl-5 font-bold">
             SEMİNER HAKKINDA
           </h2>
           <div
@@ -329,14 +446,14 @@ export function SeminarPage() {
               isAboutExpanded ? "max-h-[2000px]" : "max-h-60"
             }`}
           >
-            <p className="pt-12 px-10 pb-6 text-lg text-gray-300 font-light break-words whitespace-normal">
+            <p className="pt-8 md:pt-12 px-6 md:px-10 pb-6 text-base md:text-lg text-gray-300 font-light break-words whitespace-normal">
               {seminar.detailedDescription || seminar.description}
             </p>
           </div>
           {showAboutButton && (
             <button
               onClick={() => setIsAboutExpanded(!isAboutExpanded)}
-              className="flex items-center gap-2 text-white text-sm pt-4 ml-auto mr-5 mb-5 hover:text-red-500 transition-colors"
+              className="flex items-center gap-2 text-white text-sm pt-4 ml-auto mr-4 md:mr-5 mb-5 hover:text-red-500 transition-colors"
             >
               <span>
                 {isAboutExpanded ? "Daha az göster" : "Daha fazla oku"}
@@ -360,11 +477,11 @@ export function SeminarPage() {
           )}
         </div>
         {/*seminer özeti */}
-        <div className="w-full max-w-md border border-[rgb(36,36,36)] rounded-3xl ml-0 md:ml-10 h-max mt-10 overflow-hidden">
-          <h2 className="bg-[rgb(36,36,36)] text-2xl py-3 pl-5 font-bold">
+        <div className="w-full lg:max-w-md border border-[rgb(36,36,36)] rounded-3xl lg:ml-10 h-max mt-0 lg:mt-10 overflow-hidden">
+          <h2 className="bg-[rgb(36,36,36)] text-xl md:text-2xl py-3 pl-4 md:pl-5 font-bold">
             SEMİNER ÖZETİ
           </h2>
-          <div className="p-5">
+          <div className="p-4 md:p-5">
             <div
               ref={summaryRef}
               className={`transition-all duration-300 overflow-hidden space-y-3 ${
@@ -376,11 +493,11 @@ export function SeminarPage() {
                 topics.map((topic, index) => (
                   <div
                     key={index}
-                    className="flex items-start gap-3 text-gray-300"
+                    className="flex items-start gap-2 md:gap-3 text-gray-300"
                   >
-                    <div className="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center flex-shrink-0 mt-1">
+                    <div className="w-5 h-5 md:w-6 md:h-6 rounded-full border border-gray-400 flex items-center justify-center flex-shrink-0 mt-1">
                       <svg
-                        className="w-3 h-3"
+                        className="w-2.5 h-2.5 md:w-3 md:h-3"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -393,7 +510,7 @@ export function SeminarPage() {
                         />
                       </svg>
                     </div>
-                    <span className="text-gray-300 text-lg break-words flex-1">
+                    <span className="text-base md:text-lg break-words flex-1">
                       {topic}
                     </span>
                   </div>
