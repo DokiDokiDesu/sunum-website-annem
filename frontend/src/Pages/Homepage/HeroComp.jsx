@@ -1,24 +1,43 @@
 export function HeroComp() {
+  const scrollToSeminer = () => {
+    const element = document.getElementById("indicator");
+    element?.scrollIntoView({ behavior: "smooth" });
+  };
   return (
     <div className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-black border-b border-gray-800">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 z-0  mt-0 md:mt-10"
+        style={{
+          backgroundImage: "url('/platon-background.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: 1,
+        }}
+      />
+
+      {/* Dark Overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 z-[1]" />
+
       {/* Classical ornamental borders */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-[1]">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[rgba(205,182,98,0.3)] to-transparent"></div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[rgba(205,182,98,0.3)] to-transparent"></div>
       </div>
 
       {/* Greek columns decoration */}
-      <div className="absolute left-8 top-1/2 -translate-y-1/2 hidden lg:block opacity-10">
+      <div className="absolute left-8 top-1/2 -translate-y-1/2 hidden lg:block opacity-10 z-[1]">
         <div className="w-8 h-64 border-l-2 border-r-2 border-gray-600"></div>
       </div>
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:block opacity-10">
+      <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:block opacity-10 z-[1]">
         <div className="w-8 h-64 border-l-2 border-r-2 border-gray-600"></div>
       </div>
 
       {/* Main content */}
       <div className="relative z-10 container mx-auto px-6 py-20 text-center">
         {/* Main tagline */}
-        <div className="mb-12">
+        <div className=" mb-6 md:mb-12">
           <p className="text-xl md:text-2xl text-gray-400 mb-6 font-serif italic">
             Yüzeysel bilgi çağında
           </p>
@@ -31,7 +50,7 @@ export function HeroComp() {
         </div>
 
         {/* Decorative separator */}
-        <div className="flex items-center justify-center gap-4 mb-8">
+        <div className="flex items-center justify-center gap-4 mb-4 md:mb-8 ">
           <div className="w-12 h-px bg-[rgb(205,182,98)]"></div>
           <div className="w-2 h-2 rotate-45 border border-[rgb(205,182,98)]"></div>
           <div className="w-12 h-px bg-[rgb(205,182,98)]"></div>
@@ -52,13 +71,19 @@ export function HeroComp() {
           <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto mb-8 font-serif">
             Felsefe, sanat ve bilim dünyasından derinlikli seminerler
           </p>
-          <button className="px-4 py-3 border-2 border-[rgb(205,182,98)] text-[rgb(205,182,98)] font-serif tracking-wider hover:bg-[rgb(205,182,98)] hover:text-black transition-all duration-300 uppercase cursor-pointer rounded-3xl">
+          <button
+            onClick={scrollToSeminer}
+            className="px-4 py-3 border-2 border-[rgb(205,182,98)] text-[rgb(205,182,98)] font-serif tracking-wider hover:bg-[rgb(205,182,98)] hover:text-black transition-all duration-300 uppercase cursor-pointer rounded-3xl"
+          >
             Seminerleri Keşfet
           </button>
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div
+          id="indicator"
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-20"
+        >
           <svg
             className="w-6 h-6 text-[rgba(205,182,98,0.5)]"
             fill="none"

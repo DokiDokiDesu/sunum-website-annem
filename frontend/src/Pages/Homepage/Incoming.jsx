@@ -39,7 +39,10 @@ export function Incoming() {
   };
 
   return (
-    <div className="py-10 px-8 w-full overflow-hidden mt-20">
+    <div
+      id="incoming-seminar"
+      className="py-10 px-8 w-full overflow-hidden mt-20"
+    >
       <h2 className="text-3xl font-bold text-white mb-6">
         Yaklaşan Seminerler
       </h2>
