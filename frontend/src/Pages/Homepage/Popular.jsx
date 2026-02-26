@@ -78,7 +78,7 @@ export function Popular() {
                 <span
                   className="text-[220px] font-bold -ml-6"
                   style={{
-                    color: "#dc2626",
+                    color: "rgb(205,182,98)",
                     WebkitTextStroke: "0px transparent",
                     opacity: 0.9,
                   }}

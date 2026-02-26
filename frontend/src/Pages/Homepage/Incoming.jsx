@@ -73,13 +73,13 @@ export function Incoming() {
         {/* Scroll Container */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth"
+          className="flex gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth w-full"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {educators.map((educator, index) => (
             <div
               key={index}
-              className="relative flex-shrink-0 w-72 h-96 rounded-lg overflow-hidden cursor-pointer group"
+              className="relative flex-shrink-0 min-w-[280px] md:min-w-[350px] h-72 rounded-3xl overflow-hidden cursor-pointer group"
               onClick={() => navigate(`/seminar/${educator.id}`)}
             >
               {/* Background Image */}
@@ -91,16 +91,27 @@ export function Incoming() {
               ></div>
 
               {/* Badges */}
-              <span className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                {educator.date ? dayjs(educator.date).format("DD MMM") : ""}
-              </span>
+              <div className="absolute top-4 right-4 bg-gray-900/75 backdrop-blur-md px-4 py-2 rounded-3xl shadow-xl border border-blue-500/30">
+                <div className="flex flex-col text-white text-center">
+                  <span className="text-sm font-bold text-[rgb(205,182,98)]">
+                    {new Date(educator.date).toLocaleDateString("tr-TR", {
+                      day: "numeric",
+                      month: "long",
+                    })}
+                  </span>
+                  <span className="text-xs font-medium opacity-90 uppercase">
+                    {new Date(educator.date).toLocaleDateString("tr-TR", {
+                      weekday: "long",
+                    })}
+                  </span>
+                </div>
+              </div>
 
-              <span className="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                {educator.dayOfWeek
-                  ? educator.dayOfWeek.charAt(0).toUpperCase() +
-                    educator.dayOfWeek.slice(1)
-                  : ""}
-              </span>
+              <div className="absolute top-4 left-4 bg-gray-900/75 backdrop-blur-md px-4 py-3 rounded-3xl shadow-xl border border-blue-500/30">
+                <span className="text-lg font-bold text-[rgb(205,182,98)]">
+                  {educator.category}
+                </span>
+              </div>
 
               {/* Content */}
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">

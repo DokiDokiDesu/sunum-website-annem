@@ -147,7 +147,7 @@ export function SeminarPage() {
               {/* Bilgi Satırı - Kategori ve Süre */}
               <div className="flex items-center gap-2 flex-wrap text-gray-300 text-xs">
                 <span className="capitalize">{seminar.category}</span>
-                {seminar.duration && (
+                {seminar.duration && seminar.isScheduled && (
                   <>
                     <span>•</span>
                     <span>{seminar.duration}</span>
@@ -277,25 +277,29 @@ export function SeminarPage() {
                       <span className="bg-gray-700/50 px-3 py-1 rounded capitalize">
                         {seminar.category}
                       </span>
-                      <span>•</span>
 
-                      {seminar.duration && (
+                      {seminar.isScheduled && (
                         <>
-                          <div>
-                            <span>tahmini süre : {seminar.duration}</span>
-                          </div>
                           <span>•</span>
-                        </>
-                      )}
-                      {seminar.date && (
-                        <div>
-                          <span>{formattedDate}</span>
-                          {seminar.startTime && (
-                            <span className="ml-5">
-                              başlangıç : {seminar.startTime}
-                            </span>
+                          {seminar.duration && (
+                            <>
+                              <div>
+                                <span>tahmini süre : {seminar.duration}</span>
+                              </div>
+                              <span>•</span>
+                            </>
                           )}
-                        </div>
+                          {seminar.date && (
+                            <div>
+                              <span>{formattedDate}</span>
+                              {seminar.startTime && (
+                                <span className="ml-5">
+                                  başlangıç : {seminar.startTime}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
 
@@ -314,7 +318,7 @@ export function SeminarPage() {
                   {/* Sağ taraf - Fiyat Kutuları */}
                   <div className="lg:col-span-5 relative h-full min-h-[600px]">
                     {/* Üst Kutu */}
-                    {seminar.dayOfWeek && (
+                    {seminar.isScheduled && seminar.dayOfWeek && (
                       <div className="flex flex-col justify-center items-center lg:absolute lg:top-5 lg:right-10 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 px-4 py-4 mb-4 font-bold text-2xl  lg:mb-0">
                         <p>{formattedDay}</p>
                         {seminar.startTime && <p>{seminar.startTime}</p>}

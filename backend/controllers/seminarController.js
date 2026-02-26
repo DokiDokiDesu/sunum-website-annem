@@ -6,8 +6,7 @@ import cloudinary from "../config/cloudinary.js";
 // Geçmiş tarihli seminerleri kontrol et ve güncelle
 export const checkAndUpdateExpiredSeminars = async () => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Günün başlangıcı
+    const now = new Date();
 
     // Tarih alanı dolu ve geçmiş tarihli olan seminerleri bul
     const expiredSeminars = await Seminar.findAll({
@@ -26,10 +25,26 @@ export const checkAndUpdateExpiredSeminars = async () => {
     for (const seminar of expiredSeminars) {
       if (seminar.date) {
         const seminarDate = new Date(seminar.date);
-        seminarDate.setHours(0, 0, 0, 0);
 
-        // Eğer seminer tarihi geçmişse
-        if (seminarDate < today) {
+        // Eğer başlangıç saati varsa, tarih + saat kontrolü yap
+        let isExpired = false;
+
+        if (seminar.startTime) {
+          // Başlangıç saatini parse et (örn: "23:30")
+          const [hours, minutes] = seminar.startTime.split(":").map(Number);
+          const seminarDateTime = new Date(seminar.date);
+          seminarDateTime.setHours(hours, minutes, 0, 0);
+
+          // Seminer başlangıç zamanı geçmişse
+          isExpired = seminarDateTime < now;
+        } else {
+          // Başlangıç saati yoksa sadece tarih kontrolü yap
+          const seminarDateOnly = new Date(seminar.date);
+          seminarDateOnly.setHours(23, 59, 59, 999); // Günün sonuna kadar bekle
+          isExpired = seminarDateOnly < now;
+        }
+
+        if (isExpired) {
           await seminar.update({
             isScheduled: false,
             isUpcoming: false,
@@ -41,10 +56,11 @@ export const checkAndUpdateExpiredSeminars = async () => {
             id: seminar.id,
             title: seminar.title,
             date: seminar.date,
+            startTime: seminar.startTime,
           });
 
           console.log(
-            `Seminer tarihi geçti, planlanmamış hale getirildi: ${seminar.title}`,
+            `Seminer tarihi geçti, planlanmamış hale getirildi: ${seminar.title} (${seminar.date} ${seminar.startTime || ""})`,
           );
 
           // Aktivite logu kaydet
@@ -55,13 +71,14 @@ export const checkAndUpdateExpiredSeminars = async () => {
               action: "cancel_schedule",
               resourceType: "seminar",
               resourceId: seminar.id,
-              description: `Otomatik sistem: Geçmiş tarihli seminer planlamadan kaldırıldı - "${seminar.title}" (Tarih: ${seminar.date})`,
+              description: `Otomatik sistem: Geçmiş tarihli seminer planlamadan kaldırıldı - "${seminar.title}" (Tarih: ${seminar.date} ${seminar.startTime || ""})`,
               ipAddress: "127.0.0.1",
               userAgent: "System-AutoScheduleCheck",
               metadata: {
-                reason: "expired_date",
+                reason: "expired_datetime",
                 seminarDate: seminar.date,
-                checkDate: today.toISOString(),
+                seminarTime: seminar.startTime,
+                checkDate: now.toISOString(),
                 automatic: true,
               },
             });
@@ -127,12 +144,24 @@ export const getSeminarById = async (req, res) => {
 
     // Eğer seminer planlanmışsa ve tarihi geçmişse güncelle
     if (seminar.date && seminar.isScheduled) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const seminarDate = new Date(seminar.date);
-      seminarDate.setHours(0, 0, 0, 0);
+      const now = new Date();
+      let isExpired = false;
 
-      if (seminarDate < today) {
+      if (seminar.startTime) {
+        // Başlangıç saatini parse et
+        const [hours, minutes] = seminar.startTime.split(":").map(Number);
+        const seminarDateTime = new Date(seminar.date);
+        seminarDateTime.setHours(hours, minutes, 0, 0);
+
+        isExpired = seminarDateTime < now;
+      } else {
+        // Başlangıç saati yoksa günün sonuna kadar bekle
+        const seminarDateOnly = new Date(seminar.date);
+        seminarDateOnly.setHours(23, 59, 59, 999);
+        isExpired = seminarDateOnly < now;
+      }
+
+      if (isExpired) {
         await seminar.update({
           isScheduled: false,
           isUpcoming: false,
