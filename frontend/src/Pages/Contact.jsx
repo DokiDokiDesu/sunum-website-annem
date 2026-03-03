@@ -1,4 +1,5 @@
 import { Header } from "../Components/Header";
+import { Footer } from "../Components/Footer";
 
 export function Contact() {
   return (
@@ -136,6 +137,7 @@ export function Contact() {
           </div>
         </section>
       </div>
+      <Footer />
     </>
   );
 }

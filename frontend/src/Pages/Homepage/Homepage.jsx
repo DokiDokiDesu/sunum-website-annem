@@ -3,6 +3,7 @@ import { Incoming } from "./Incoming";
 import { Popular } from "./Popular";
 import { Voting } from "./Voting";
 import { HeroComp } from "./HeroComp";
+import { Footer } from "../../Components/Footer";
 
 export function Homepage() {
   return (
@@ -12,6 +13,7 @@ export function Homepage() {
       <Incoming />
       <Popular />
       <Voting />
+      <Footer />
     </>
   );
 }

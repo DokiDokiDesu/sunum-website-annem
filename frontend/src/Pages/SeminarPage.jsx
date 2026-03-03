@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from "../config/api";
 import { Header } from "../Components/Header";
 import dayjs from "dayjs";
 import "dayjs/locale/tr";
+import { Footer } from "../Components/Footer";
 
 dayjs.locale("tr");
 
@@ -558,6 +559,7 @@ export function SeminarPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }
